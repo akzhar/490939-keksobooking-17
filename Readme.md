@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Акжар Таов](https://up.htmlacademy.ru/javascript/17/user/490939).
-* Наставник: `Неизвестно`.
+* Наставник: Руфат Хасларов.
 
 ---
 
