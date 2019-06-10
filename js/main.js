@@ -8,48 +8,51 @@ var mapPins = mapBlock.querySelector('.map__pins');
 var templatePin = document.getElementById('pin').content.querySelector('.map__pin');
 var apartmentTypes = ['palace', 'flat', 'house', 'bungalo'];
 
-function getRandom(min, max) {
+function getRandomElemInArr(arr) {
+  return arr[Math.round(Math.random() * (arr.length - 1))];
+}
+
+function getRandomNumber(min, max) {
   return Math.round(Math.random() * (max - min) + min);
 }
 
-function createSimmilarOffers(n) {
-  var simmilarOffers = [];
+function createsimmilarAppartments(n) {
+  var simmilarAppartments = [];
   for (var i = 0; i < n; i++) {
-    var offer = {
+    simmilarAppartments[i] = {
       author: {
         avatar: 'img/avatars/user0' + (i + 1) + '.png'
       },
       offer: {
-        type: apartmentTypes[getRandom(0, apartmentTypes.length - 1)]
+        type: getRandomElemInArr(apartmentTypes)
       },
 
       location: {
-        x: getRandom(0, 1200),
-        y: getRandom(130, 630)
+        x: getRandomNumber(0, 1200),
+        y: getRandomNumber(130, 630)
       }
     };
-    simmilarOffers.push(offer);
   }
-  return simmilarOffers;
+  return simmilarAppartments;
 }
 
-function fillInPinCards(offers) {
-  var fragment = document.createDocumentFragment();
-  for (var i = 0; i < offers.length; i++) {
-    var pin = templatePin.cloneNode(true);
-    var pinImg = pin.querySelector('img');
-    var pinX = offers[i].location.x - PIN_WIDTH / 2;
-    var pinY = offers[i].location.y - PIN_HEIGHT;
-    pin.style = ' left: ' + pinX + 'px; top: ' + pinY + 'px;';
-    pinImg.src = offers[i].author.avatar;
-    pinImg.alt = 'заголовок объявления'; // видимо, будет где-то дальше
-    fragment.appendChild(pin);
-  }
-  return fragment;
+function renderPin(appartment) {
+  var pin = templatePin.cloneNode(true);
+  var pinImg = pin.querySelector('img');
+  var pinX = appartment.location.x - PIN_WIDTH / 2;
+  var pinY = appartment.location.y - PIN_HEIGHT;
+  pin.style.left = pinX + 'px';
+  pin.style.top = pinY + 'px';
+  pinImg.src = appartment.author.avatar;
+  pinImg.alt = 'заголовок объявления'; // видимо, будет где-то дальше
+  return pin;
 }
 
-var simmilarOffers = createSimmilarOffers(NUMBER_OF_OFFERS);
-var simmilarOffersCards = fillInPinCards(simmilarOffers);
-
+var simmilarAppartments = createsimmilarAppartments(NUMBER_OF_OFFERS);
+var fragment = document.createDocumentFragment();
+for (var i = 0; i < simmilarAppartments.length; i++) {
+  var pin = renderPin(simmilarAppartments[i]);
+  fragment.appendChild(pin);
+}
+mapPins.appendChild(fragment);
 mapBlock.classList.remove('map--faded');
-mapPins.appendChild(simmilarOffersCards);
