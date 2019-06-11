@@ -8,7 +8,7 @@ var mapPins = mapBlock.querySelector('.map__pins');
 var templatePin = document.getElementById('pin').content.querySelector('.map__pin');
 var apartmentTypes = ['palace', 'flat', 'house', 'bungalo'];
 
-function getRandomElemInArr(arr) {
+function getRandomApartmentType(arr) {
   return arr[Math.round(Math.random() * (arr.length - 1))];
 }
 
@@ -16,15 +16,15 @@ function getRandomNumber(min, max) {
   return Math.round(Math.random() * (max - min) + min);
 }
 
-function createsimmilarAppartments(n) {
-  var simmilarAppartments = [];
+function createApartments(n) {
+  var apartments = [];
   for (var i = 0; i < n; i++) {
-    simmilarAppartments[i] = {
+    apartments[i] = {
       author: {
         avatar: 'img/avatars/user0' + (i + 1) + '.png'
       },
       offer: {
-        type: getRandomElemInArr(apartmentTypes)
+        type: getRandomApartmentType(apartmentTypes)
       },
 
       location: {
@@ -33,26 +33,31 @@ function createsimmilarAppartments(n) {
       }
     };
   }
-  return simmilarAppartments;
+  return apartments;
 }
 
-function renderPin(appartment) {
+function renderPin(apartment) {
   var pin = templatePin.cloneNode(true);
   var pinImg = pin.querySelector('img');
-  var pinX = appartment.location.x - PIN_WIDTH / 2;
-  var pinY = appartment.location.y - PIN_HEIGHT;
+  var pinX = apartment.location.x - PIN_WIDTH / 2;
+  var pinY = apartment.location.y - PIN_HEIGHT;
   pin.style.left = pinX + 'px';
   pin.style.top = pinY + 'px';
-  pinImg.src = appartment.author.avatar;
+  pinImg.src = apartment.author.avatar;
   pinImg.alt = 'заголовок объявления'; // видимо, будет где-то дальше
   return pin;
 }
 
-var simmilarAppartments = createsimmilarAppartments(NUMBER_OF_OFFERS);
-var fragment = document.createDocumentFragment();
-for (var i = 0; i < simmilarAppartments.length; i++) {
-  var pin = renderPin(simmilarAppartments[i]);
-  fragment.appendChild(pin);
+function getFragmentWithPins(apartments) {
+  var fragment = document.createDocumentFragment();
+  for (var i = 0; i < apartments.length; i++) {
+    var pin = renderPin(apartments[i]);
+    fragment.appendChild(pin);
+  }
+  return fragment;
 }
+
+var apartments = createApartments(NUMBER_OF_OFFERS);
+var fragment = getFragmentWithPins(apartments);
 mapPins.appendChild(fragment);
 mapBlock.classList.remove('map--faded');
