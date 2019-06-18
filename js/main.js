@@ -3,10 +3,10 @@
 var NUMBER_OF_OFFERS = 8;
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
-var mapBlock = document.querySelector('.map');
-var mapPins = mapBlock.querySelector('.map__pins');
+var APARTMENT_TYPES = ['palace', 'flat', 'house', 'bungalo'];
 var templatePin = document.getElementById('pin').content.querySelector('.map__pin');
-var apartmentTypes = ['palace', 'flat', 'house', 'bungalo'];
+var mapPinMain = document.querySelector('.map__pin--main');
+
 
 function getRandomApartmentType(arr) {
   return arr[Math.round(Math.random() * (arr.length - 1))];
@@ -24,7 +24,7 @@ function createApartments(n) {
         avatar: 'img/avatars/user0' + (i + 1) + '.png'
       },
       offer: {
-        type: getRandomApartmentType(apartmentTypes)
+        type: getRandomApartmentType(APARTMENT_TYPES)
       },
 
       location: {
@@ -57,7 +57,39 @@ function getFragmentWithPins(apartments) {
   return fragment;
 }
 
-var apartments = createApartments(NUMBER_OF_OFFERS);
-var fragment = getFragmentWithPins(apartments);
-mapPins.appendChild(fragment);
-mapBlock.classList.remove('map--faded');
+function removeAttributes(objectsArr, attributeStr) {
+  for (var i = 0; i < objectsArr.length; i++) {
+    objectsArr[i].removeAttribute(attributeStr);
+  }
+}
+
+function unlockForm() {
+  var inputs = document.querySelectorAll('input');
+  var selects = document.querySelectorAll('select');
+  var sumbitBtn = document.querySelector('.ad-form__submit');
+  removeAttributes(inputs, 'disabled');
+  removeAttributes(selects, 'disabled');
+  sumbitBtn.removeAttribute('disabled');
+}
+
+function setAddressCoordinates(pinObj) {
+  var addressInput = document.querySelector('#address');
+  var x = pinObj.style.left.slice(0, -2);
+  var y = pinObj.style.top.slice(0, -2);
+  addressInput.value = x + ', ' + y;
+}
+
+function mapPinMainClickHandler() {
+  var mapBlock = document.querySelector('.map');
+  var adForm = document.querySelector('.ad-form');
+  var mapPins = mapBlock.querySelector('.map__pins');
+  var apartments = createApartments(NUMBER_OF_OFFERS);
+  var fragment = getFragmentWithPins(apartments);
+  mapPins.appendChild(fragment);
+  mapBlock.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+  unlockForm();
+  setAddressCoordinates(mapPinMain);
+}
+
+mapPinMain.addEventListener('click', mapPinMainClickHandler);
