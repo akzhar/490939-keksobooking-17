@@ -3,10 +3,12 @@
 var NUMBER_OF_OFFERS = 8;
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
-var mapBlock = document.querySelector('.map');
-var mapPins = mapBlock.querySelector('.map__pins');
+var APARTMENT_TYPES = ['palace', 'flat', 'house', 'bungalo'];
 var templatePin = document.getElementById('pin').content.querySelector('.map__pin');
-var apartmentTypes = ['palace', 'flat', 'house', 'bungalo'];
+var mapPinMain = document.querySelector('.map__pin--main');
+var mapBlock = document.querySelector('.map');
+var adForm = document.querySelector('.ad-form');
+var mapPins = mapBlock.querySelector('.map__pins');
 
 function getRandomApartmentType(arr) {
   return arr[Math.round(Math.random() * (arr.length - 1))];
@@ -24,7 +26,7 @@ function createApartments(n) {
         avatar: 'img/avatars/user0' + (i + 1) + '.png'
       },
       offer: {
-        type: getRandomApartmentType(apartmentTypes)
+        type: getRandomApartmentType(APARTMENT_TYPES)
       },
 
       location: {
@@ -44,7 +46,7 @@ function renderPin(apartment) {
   pin.style.left = pinX + 'px';
   pin.style.top = pinY + 'px';
   pinImg.src = apartment.author.avatar;
-  pinImg.alt = 'заголовок объявления'; // видимо, будет где-то дальше
+  pinImg.alt = 'заголовок объявления'; // to be filled in the future
   return pin;
 }
 
@@ -57,7 +59,44 @@ function getFragmentWithPins(apartments) {
   return fragment;
 }
 
-var apartments = createApartments(NUMBER_OF_OFFERS);
-var fragment = getFragmentWithPins(apartments);
-mapPins.appendChild(fragment);
-mapBlock.classList.remove('map--faded');
+function removeAttributes(objectsArr, attributeStr) {
+  for (var i = 0; i < objectsArr.length; i++) {
+    objectsArr[i].removeAttribute(attributeStr);
+  }
+}
+
+function unlockForm() {
+  var inputs = document.querySelectorAll('input');
+  var selects = document.querySelectorAll('select');
+  var sumbitBtn = document.querySelector('.ad-form__submit');
+  removeAttributes(inputs, 'disabled');
+  removeAttributes(selects, 'disabled');
+  sumbitBtn.removeAttribute('disabled');
+  adForm.classList.remove('ad-form--disabled');
+}
+
+function calculatepinCenter(pinObj) {
+  var pinCenter = {
+    x: Math.floor(pinObj.offsetLeft + pinObj.offsetWidth / 2),
+    y: Math.floor(pinObj.offsetTop + pinObj.offsetHeight / 2)
+  };
+  return pinCenter;
+}
+
+function fillPinCenterInAddress(pinObj) {
+  var addressInput = document.querySelector('#address');
+  var pinCenter = calculatepinCenter(pinObj);
+  addressInput.value = pinCenter.x + ', ' + pinCenter.y;
+}
+
+function mapPinMainClickHandler() {
+  var apartments = createApartments(NUMBER_OF_OFFERS);
+  var fragment = getFragmentWithPins(apartments);
+  mapPins.appendChild(fragment);
+  mapBlock.classList.remove('map--faded');
+  unlockForm();
+  fillPinCenterInAddress(mapPinMain);
+  mapPinMain.removeEventListener('click', mapPinMainClickHandler);
+}
+
+mapPinMain.addEventListener('click', mapPinMainClickHandler);
