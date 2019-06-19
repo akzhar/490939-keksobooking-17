@@ -3,16 +3,33 @@
 var NUMBER_OF_OFFERS = 8;
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
-var APARTMENT_TYPES = ['palace', 'flat', 'house', 'bungalo'];
+var APARTMENT_TYPES = [
+  {
+    type: 'palace',
+    minPrice: 10000
+  },
+  {
+    type: 'flat',
+    minPrice: 1000
+  },
+  {
+    type: 'house',
+    minPrice: 5000
+  },
+  {
+    type: 'bungalo',
+    minPrice: 0
+  },
+];
 var templatePin = document.getElementById('pin').content.querySelector('.map__pin');
 var mapPinMain = document.querySelector('.map__pin--main');
 var mapBlock = document.querySelector('.map');
 var adForm = document.querySelector('.ad-form');
 var mapPins = mapBlock.querySelector('.map__pins');
-
-function getRandomApartmentType(arr) {
-  return arr[Math.round(Math.random() * (arr.length - 1))];
-}
+var typeSelect = adForm.querySelector('#type');
+var timeInSelect = adForm.querySelector('#timein');
+var timeOutSelect = adForm.querySelector('#timeout');
+var priceInput = adForm.querySelector('#price');
 
 function getRandomNumber(min, max) {
   return Math.round(Math.random() * (max - min) + min);
@@ -26,7 +43,7 @@ function createApartments(n) {
         avatar: 'img/avatars/user0' + (i + 1) + '.png'
       },
       offer: {
-        type: getRandomApartmentType(APARTMENT_TYPES)
+        type: APARTMENT_TYPES[getRandomNumber(0, APARTMENT_TYPES.length - 1)].type
       },
 
       location: {
@@ -68,9 +85,11 @@ function removeAttributes(objectsArr, attributeStr) {
 function unlockForm() {
   var inputs = document.querySelectorAll('input');
   var selects = document.querySelectorAll('select');
+  var textarea = document.querySelector('textarea');
   var sumbitBtn = document.querySelector('.ad-form__submit');
   removeAttributes(inputs, 'disabled');
   removeAttributes(selects, 'disabled');
+  textarea.removeAttribute('disabled');
   sumbitBtn.removeAttribute('disabled');
   adForm.classList.remove('ad-form--disabled');
 }
@@ -89,14 +108,35 @@ function fillPinCenterInAddress(pinObj) {
   addressInput.value = pinCenter.x + ', ' + pinCenter.y;
 }
 
-function mapPinMainClickHandler() {
+function onMapPinMainClick() {
   var apartments = createApartments(NUMBER_OF_OFFERS);
   var fragment = getFragmentWithPins(apartments);
   mapPins.appendChild(fragment);
   mapBlock.classList.remove('map--faded');
   unlockForm();
   fillPinCenterInAddress(mapPinMain);
-  mapPinMain.removeEventListener('click', mapPinMainClickHandler);
+  mapPinMain.removeEventListener('click', onMapPinMainClick);
 }
 
-mapPinMain.addEventListener('click', mapPinMainClickHandler);
+function onTypeSelectChanged() {
+  var selectedOptionIndex = typeSelect.selectedIndex;
+  var selectedOption = typeSelect.querySelectorAll('option')[selectedOptionIndex];
+  var i = 0;
+  while (APARTMENT_TYPES[i].type !== selectedOption.value) {
+    i++;
+  }
+  var minPrice = APARTMENT_TYPES[i].minPrice;
+  priceInput.min = minPrice;
+  priceInput.placeholder = minPrice;
+}
+
+function onTimeInOutSelectChange(evt) {
+  var connectedSelect = (evt.target === timeInSelect) ? timeOutSelect : timeInSelect;
+  var selectedOptionIndex = evt.target.selectedIndex;
+  connectedSelect.selectedIndex = selectedOptionIndex;
+}
+
+mapPinMain.addEventListener('click', onMapPinMainClick);
+typeSelect.addEventListener('change', onTypeSelectChanged);
+timeInSelect.addEventListener('change', onTimeInOutSelectChange);
+timeOutSelect.addEventListener('change', onTimeInOutSelectChange);
