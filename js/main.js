@@ -6,7 +6,9 @@ var PIN_HEIGHT = 70;
 var APARTMENT_TYPES = ['palace', 'flat', 'house', 'bungalo'];
 var templatePin = document.getElementById('pin').content.querySelector('.map__pin');
 var mapPinMain = document.querySelector('.map__pin--main');
-
+var mapBlock = document.querySelector('.map');
+var adForm = document.querySelector('.ad-form');
+var mapPins = mapBlock.querySelector('.map__pins');
 
 function getRandomApartmentType(arr) {
   return arr[Math.round(Math.random() * (arr.length - 1))];
@@ -44,7 +46,7 @@ function renderPin(apartment) {
   pin.style.left = pinX + 'px';
   pin.style.top = pinY + 'px';
   pinImg.src = apartment.author.avatar;
-  pinImg.alt = 'заголовок объявления'; // видимо, будет где-то дальше
+  pinImg.alt = 'заголовок объявления'; // to be filled in the future
   return pin;
 }
 
@@ -70,26 +72,31 @@ function unlockForm() {
   removeAttributes(inputs, 'disabled');
   removeAttributes(selects, 'disabled');
   sumbitBtn.removeAttribute('disabled');
+  adForm.classList.remove('ad-form--disabled');
 }
 
-function setAddressCoordinates(pinObj) {
+function calculatepinCenter(pinObj) {
+  var pinCenter = {
+    x: Math.floor(pinObj.offsetLeft + pinObj.offsetWidth / 2),
+    y: Math.floor(pinObj.offsetTop + pinObj.offsetHeight / 2)
+  };
+  return pinCenter;
+}
+
+function fillPinCenterInAddress(pinObj) {
   var addressInput = document.querySelector('#address');
-  var x = pinObj.style.left.slice(0, -2);
-  var y = pinObj.style.top.slice(0, -2);
-  addressInput.value = x + ', ' + y;
+  var pinCenter = calculatepinCenter(pinObj);
+  addressInput.value = pinCenter.x + ', ' + pinCenter.y;
 }
 
 function mapPinMainClickHandler() {
-  var mapBlock = document.querySelector('.map');
-  var adForm = document.querySelector('.ad-form');
-  var mapPins = mapBlock.querySelector('.map__pins');
   var apartments = createApartments(NUMBER_OF_OFFERS);
   var fragment = getFragmentWithPins(apartments);
   mapPins.appendChild(fragment);
   mapBlock.classList.remove('map--faded');
-  adForm.classList.remove('ad-form--disabled');
   unlockForm();
-  setAddressCoordinates(mapPinMain);
+  fillPinCenterInAddress(mapPinMain);
+  mapPinMain.removeEventListener('click', mapPinMainClickHandler);
 }
 
 mapPinMain.addEventListener('click', mapPinMainClickHandler);
