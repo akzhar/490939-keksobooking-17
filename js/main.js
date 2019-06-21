@@ -3,7 +3,7 @@
 var NUMBER_OF_OFFERS = 8;
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
-var APARTMENT_TYPES = [
+var APARTMENTS = [
   {
     type: 'palace',
     minPrice: 10000
@@ -43,7 +43,7 @@ function createApartments(n) {
         avatar: 'img/avatars/user0' + (i + 1) + '.png'
       },
       offer: {
-        type: APARTMENT_TYPES[getRandomNumber(0, APARTMENT_TYPES.length - 1)].type
+        type: APARTMENTS[getRandomNumber(0, APARTMENTS.length - 1)].type
       },
 
       location: {
@@ -121,11 +121,10 @@ function onMapPinMainClick() {
 function onTypeSelectChanged() {
   var selectedOptionIndex = typeSelect.selectedIndex;
   var selectedOption = typeSelect.querySelectorAll('option')[selectedOptionIndex];
-  var i = 0;
-  while (APARTMENT_TYPES[i].type !== selectedOption.value) {
-    i++;
-  }
-  var minPrice = APARTMENT_TYPES[i].minPrice;
+  var selectedAppartment = APARTMENTS.filter(function(apartment) {
+    return apartment.type === selectedOption.value;
+  });
+  var minPrice = selectedAppartment[0].minPrice;
   priceInput.min = minPrice;
   priceInput.placeholder = minPrice;
 }
