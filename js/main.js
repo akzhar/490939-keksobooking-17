@@ -3,24 +3,12 @@
 var NUMBER_OF_OFFERS = 8;
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
-var APARTMENTS = [
-  {
-    type: 'palace',
-    minPrice: 10000
-  },
-  {
-    type: 'flat',
-    minPrice: 1000
-  },
-  {
-    type: 'house',
-    minPrice: 5000
-  },
-  {
-    type: 'bungalo',
-    minPrice: 0
-  },
-];
+var MIN_PRICES = {
+  palace: 10000,
+  flat: 1000,
+  house: 5000,
+  bungalo: 0
+};
 var templatePin = document.getElementById('pin').content.querySelector('.map__pin');
 var mapPinMain = document.querySelector('.map__pin--main');
 var mapBlock = document.querySelector('.map');
@@ -35,6 +23,12 @@ function getRandomNumber(min, max) {
   return Math.round(Math.random() * (max - min) + min);
 }
 
+function getRandomKeyInObject(arr) {
+  var keys = Object.keys(arr);
+  var key = keys[getRandomNumber(0, keys.length - 1)];
+  return key;
+}
+
 function createApartments(n) {
   var apartments = [];
   for (var i = 0; i < n; i++) {
@@ -43,7 +37,7 @@ function createApartments(n) {
         avatar: 'img/avatars/user0' + (i + 1) + '.png'
       },
       offer: {
-        type: APARTMENTS[getRandomNumber(0, APARTMENTS.length - 1)].type
+        type: getRandomKeyInObject(MIN_PRICES)
       },
 
       location: {
@@ -121,10 +115,7 @@ function onMapPinMainClick() {
 function onTypeSelectChanged() {
   var selectedOptionIndex = typeSelect.selectedIndex;
   var selectedOption = typeSelect.querySelectorAll('option')[selectedOptionIndex];
-  var selectedAppartment = APARTMENTS.filter(function(apartment) {
-    return apartment.type === selectedOption.value;
-  });
-  var minPrice = selectedAppartment[0].minPrice;
+  var minPrice = MIN_PRICES[selectedOption.value];
   priceInput.min = minPrice;
   priceInput.placeholder = minPrice;
 }
