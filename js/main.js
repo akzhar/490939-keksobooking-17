@@ -9,11 +9,16 @@ var MIN_PRICES = {
   house: 5000,
   bungalo: 0
 };
+var MAP_LIMITS = {
+  xMin: 0,
+  xMax: 1200,
+  yMin: 130,
+  yMax: 630,
+};
 var templatePin = document.getElementById('pin').content.querySelector('.map__pin');
 var mapPinMain = document.querySelector('.map__pin--main');
 var mapBlock = document.querySelector('.map');
 var adForm = document.querySelector('.ad-form');
-var mapPins = mapBlock.querySelector('.map__pins');
 var typeSelect = adForm.querySelector('#type');
 var timeInSelect = adForm.querySelector('#timein');
 var timeOutSelect = adForm.querySelector('#timeout');
@@ -41,8 +46,8 @@ function createApartments(n) {
       },
 
       location: {
-        x: getRandomNumber(0, 1200),
-        y: getRandomNumber(130, 630)
+        x: getRandomNumber(MAP_LIMITS.xMin, MAP_LIMITS.xMax),
+        y: getRandomNumber(MAP_LIMITS.yMin, MAP_LIMITS.yMax)
       }
     };
   }
@@ -88,28 +93,18 @@ function unlockForm() {
   adForm.classList.remove('ad-form--disabled');
 }
 
-function calculatepinCenter(pinObj) {
-  var pinCenter = {
+function calculatePinCoords(pinObj) {
+  var pinCoords = {
     x: Math.floor(pinObj.offsetLeft + pinObj.offsetWidth / 2),
-    y: Math.floor(pinObj.offsetTop + pinObj.offsetHeight / 2)
+    y: Math.floor(pinObj.offsetTop + pinObj.offsetHeight)
   };
-  return pinCenter;
+  return pinCoords;
 }
 
-function fillPinCenterInAddress(pinObj) {
+function fillPinCoordsInAddress(pinObj) {
   var addressInput = document.querySelector('#address');
-  var pinCenter = calculatepinCenter(pinObj);
-  addressInput.value = pinCenter.x + ', ' + pinCenter.y;
-}
-
-function onMapPinMainClick() {
-  var apartments = createApartments(NUMBER_OF_OFFERS);
-  var fragment = getFragmentWithPins(apartments);
-  mapPins.appendChild(fragment);
-  mapBlock.classList.remove('map--faded');
-  unlockForm();
-  fillPinCenterInAddress(mapPinMain);
-  mapPinMain.removeEventListener('click', onMapPinMainClick);
+  var pinCoords = calculatePinCoords(pinObj);
+  addressInput.value = pinCoords.x + ', ' + pinCoords.y;
 }
 
 function onTypeSelectChanged() {
@@ -126,7 +121,58 @@ function onTimeInOutSelectChange(evt) {
   connectedSelect.selectedIndex = selectedOptionIndex;
 }
 
-mapPinMain.addEventListener('click', onMapPinMainClick);
+function generateApartments() {
+  var apartments = createApartments(NUMBER_OF_OFFERS);
+  var fragment = getFragmentWithPins(apartments);
+  var mapPins = mapBlock.querySelector('.map__pins');
+  mapPins.appendChild(fragment);
+}
+
+function onMapPinMainMouseDown(evtMouseDown) {
+  var currentCoords = {
+    x: evtMouseDown.clientX,
+    y: evtMouseDown.clientY,
+  };
+  var onDocumentMouseMove = function (evtMove) {
+    var shift = {
+      x: currentCoords.x - evtMove.clientX,
+      y: currentCoords.y - evtMove.clientY
+    };
+    var pinMainTop = mapPinMain.offsetTop - shift.y;
+    var pinMainLeft = mapPinMain.offsetLeft - shift.x;
+    var pinHeight = mapPinMain.offsetHeight;
+    var pinWidth = mapPinMain.offsetWidth;
+    if (pinMainTop < (MAP_LIMITS.yMin - pinHeight)) {
+      pinMainTop = MAP_LIMITS.yMin - pinHeight;
+    }
+    if (pinMainTop > (MAP_LIMITS.yMax - pinHeight)) {
+      pinMainTop = MAP_LIMITS.yMax - pinHeight;
+    }
+    if (pinMainLeft < (MAP_LIMITS.xMin - pinWidth / 2)) {
+      pinMainLeft = MAP_LIMITS.xMin - pinWidth / 2;
+    }
+    if (pinMainLeft > (MAP_LIMITS.xMax - pinWidth / 2)) {
+      pinMainLeft = MAP_LIMITS.xMax - pinWidth / 2;
+    }
+    currentCoords.x = evtMove.clientX;
+    currentCoords.y = evtMove.clientY;
+    mapPinMain.style.top = pinMainTop + 'px';
+    mapPinMain.style.left = pinMainLeft + 'px';
+  };
+  var onDocumentMouseUp = function () {
+    generateApartments();
+    unlockForm();
+    mapBlock.classList.remove('map--faded');
+    fillPinCoordsInAddress(mapPinMain);
+    mapPinMain.removeEventListener('mousedown', onMapPinMainMouseDown);
+    document.removeEventListener('mousemove', onDocumentMouseMove);
+    document.removeEventListener('mouseup', onDocumentMouseUp);
+  };
+  document.addEventListener('mousemove', onDocumentMouseMove);
+  document.addEventListener('mouseup', onDocumentMouseUp);
+}
+
+mapPinMain.addEventListener('mousedown', onMapPinMainMouseDown);
 typeSelect.addEventListener('change', onTypeSelectChanged);
 timeInSelect.addEventListener('change', onTimeInOutSelectChange);
 timeOutSelect.addEventListener('change', onTimeInOutSelectChange);
