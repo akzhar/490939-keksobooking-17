@@ -9,15 +9,15 @@ var MIN_PRICES = {
   house: 5000,
   bungalo: 0
 };
+var mapBlock = document.querySelector('.map');
 var MAP_LIMITS = {
   xMin: 0,
-  xMax: 1200,
+  xMax: mapBlock.offsetWidth,
   yMin: 130,
   yMax: 630,
 };
 var templatePin = document.getElementById('pin').content.querySelector('.map__pin');
 var mapPinMain = document.querySelector('.map__pin--main');
-var mapBlock = document.querySelector('.map');
 var adForm = document.querySelector('.ad-form');
 var typeSelect = adForm.querySelector('#type');
 var timeInSelect = adForm.querySelector('#timein');
@@ -128,6 +128,17 @@ function generateApartments() {
   mapPins.appendChild(fragment);
 }
 
+function updateMapLimits() {
+  MAP_LIMITS.xMax = mapBlock.offsetWidth;
+}
+
+function onMapPinMainMouseUp() {
+  generateApartments();
+  unlockForm();
+  mapBlock.classList.remove('map--faded');
+  mapPinMain.removeEventListener('mouseup', onMapPinMainMouseUp);
+}
+
 function onMapPinMainMouseDown(evtMouseDown) {
   var currentCoords = {
     x: evtMouseDown.clientX,
@@ -160,11 +171,7 @@ function onMapPinMainMouseDown(evtMouseDown) {
     mapPinMain.style.left = pinMainLeft + 'px';
   };
   var onDocumentMouseUp = function () {
-    generateApartments();
-    unlockForm();
-    mapBlock.classList.remove('map--faded');
     fillPinCoordsInAddress(mapPinMain);
-    mapPinMain.removeEventListener('mousedown', onMapPinMainMouseDown);
     document.removeEventListener('mousemove', onDocumentMouseMove);
     document.removeEventListener('mouseup', onDocumentMouseUp);
   };
@@ -172,7 +179,9 @@ function onMapPinMainMouseDown(evtMouseDown) {
   document.addEventListener('mouseup', onDocumentMouseUp);
 }
 
+mapPinMain.addEventListener('mouseup', onMapPinMainMouseUp);
 mapPinMain.addEventListener('mousedown', onMapPinMainMouseDown);
 typeSelect.addEventListener('change', onTypeSelectChanged);
 timeInSelect.addEventListener('change', onTimeInOutSelectChange);
 timeOutSelect.addEventListener('change', onTimeInOutSelectChange);
+window.addEventListener('resize', updateMapLimits);
