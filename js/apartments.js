@@ -7,6 +7,7 @@
   };
   var templatePin = document.getElementById('pin').content.querySelector('.map__pin');
   var mapBlock = document.querySelector('.map');
+
   function createApartments(n) {
     var apartments = [];
     for (var i = 0; i < n; i++) {
@@ -26,6 +27,7 @@
     }
     return apartments;
   }
+
   function renderPin(apartment) {
     var pin = templatePin.cloneNode(true);
     var pinImg = pin.querySelector('img');
@@ -37,6 +39,7 @@
     pinImg.alt = 'заголовок объявления'; // to be filled in the future
     return pin;
   }
+
   function getFragmentWithPins(apartments) {
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < apartments.length; i++) {
@@ -45,12 +48,15 @@
     }
     return fragment;
   }
+
+  function generateApartments() {
+    var apartments = createApartments(dependencies.data.NUMBER_OF_OFFERS);
+    var fragment = getFragmentWithPins(apartments);
+    var mapPins = mapBlock.querySelector('.map__pins');
+    mapPins.appendChild(fragment);
+  }
+
   window.apartments = {
-    generateApartments: function () {
-      var apartments = createApartments(dependencies.data.NUMBER_OF_OFFERS);
-      var fragment = getFragmentWithPins(apartments);
-      var mapPins = mapBlock.querySelector('.map__pins');
-      mapPins.appendChild(fragment);
-    }
+    generateApartments: generateApartments
   };
 })();
