@@ -2,6 +2,12 @@
 
 (function () {
 
+  window.utils = {
+    getRandomNumber: getRandomNumber,
+    getRandomKeyInObject: getRandomKeyInObject,
+    removeAttributes: removeAttributes
+  };
+
   function getRandomNumber(min, max) {
     return Math.round(Math.random() * (max - min) + min);
   }
@@ -17,10 +23,4 @@
       objectsArr[i].removeAttribute(attributeStr);
     }
   }
-
-  window.utils = {
-    getRandomNumber: getRandomNumber,
-    getRandomKeyInObject: getRandomKeyInObject,
-    removeAttributes: removeAttributes
-  };
 })();

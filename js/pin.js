@@ -9,6 +9,12 @@
   var mapBlock = document.querySelector('.map');
   var mapPinMain = document.querySelector('.map__pin--main');
 
+  window.pin = {
+    updateMapLimits: updateMapLimits,
+    onMapPinMainMouseUp: onMapPinMainMouseUp,
+    onMapPinMainMouseDown: onMapPinMainMouseDown
+  };
+
   function calculatePinCoords(pinObj) {
     var pinCoords = {
       x: Math.floor(pinObj.offsetLeft + pinObj.offsetWidth / 2),
@@ -28,7 +34,8 @@
   }
 
   function onMapPinMainMouseUp() {
-    dependencies.apartments.generateApartments();
+    dependencies.apartments.generateApartments(window.cratedPins);
+
     dependencies.form.unlockForm();
     mapBlock.classList.remove('map--faded');
     mapPinMain.removeEventListener('mouseup', window.pin.onMapPinMainMouseUp);
@@ -73,10 +80,4 @@
     document.addEventListener('mousemove', onDocumentMouseMove);
     document.addEventListener('mouseup', onDocumentMouseUp);
   }
-
-  window.pin = {
-    updateMapLimits: updateMapLimits,
-    onMapPinMainMouseUp: onMapPinMainMouseUp,
-    onMapPinMainMouseDown: onMapPinMainMouseDown
-  };
 })();

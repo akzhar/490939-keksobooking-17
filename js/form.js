@@ -11,6 +11,12 @@
   var timeOutSelect = adForm.querySelector('#timeout');
   var priceInput = adForm.querySelector('#price');
 
+  window.form = {
+    unlockForm: unlockForm,
+    onTypeSelectChanged: onTypeSelectChanged,
+    onTimeInOutSelectChange: onTimeInOutSelectChange
+  };
+
   function unlockForm() {
     var inputs = document.querySelectorAll('input');
     var selects = document.querySelectorAll('select');
@@ -36,10 +42,4 @@
     var selectedOptionIndex = evt.target.selectedIndex;
     connectedSelect.selectedIndex = selectedOptionIndex;
   }
-
-  window.form = {
-    unlockForm: unlockForm,
-    onTypeSelectChanged: onTypeSelectChanged,
-    onTimeInOutSelectChange: onTimeInOutSelectChange
-  };
 })();
