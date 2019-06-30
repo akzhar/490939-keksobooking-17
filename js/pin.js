@@ -34,8 +34,7 @@
   }
 
   function onMapPinMainMouseUp() {
-    dependencies.apartments.generateApartments(window.cratedPins);
-
+    dependencies.apartments.generateApartments(window.renderedPins);
     dependencies.form.unlockForm();
     mapBlock.classList.remove('map--faded');
     mapPinMain.removeEventListener('mouseup', window.pin.onMapPinMainMouseUp);

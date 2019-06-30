@@ -6,16 +6,16 @@
   };
 
   window.fragment = {
-    getFragmentWithPins: getFragmentWithPins
+    getRenderedPins: getRenderedPins
   };
 
-  function getFragmentWithPins(apartments) {
+  function getRenderedPins(apartments) {
     var fragment = document.createDocumentFragment();
     apartments.forEach(function (apartment) {
       var pin = createPin(apartment);
       fragment.appendChild(pin);
     });
-    window.cratedPins = fragment;
+    return fragment;
   }
 
   function createPin(apartment) {
