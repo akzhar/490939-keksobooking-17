@@ -23,7 +23,6 @@
   }
 
   function onSuccess(data) {
-    // debugger;
     window.renderedPins = dependencies.fragment.getRenderedPins(data);
   }
 

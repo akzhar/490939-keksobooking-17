@@ -5,10 +5,6 @@
     data: window.data
   };
 
-  window.fragment = {
-    getRenderedPins: getRenderedPins
-  };
-
   function getRenderedPins(apartments) {
     var fragment = document.createDocumentFragment();
     apartments.forEach(function (apartment) {
@@ -30,4 +26,8 @@
     pinImg.alt = 'заголовок объявления'; // to be filled in the future
     return pin;
   }
+
+  window.fragment = {
+    getRenderedPins: getRenderedPins
+  };
 })();
