@@ -23,7 +23,8 @@
   }
 
   function onSuccess(data) {
-    window.renderedPins = dependencies.fragment.getRenderedPins(data);
+    window.xhrData = data;
+    window.renderedPins = dependencies.fragment.getRenderedPins(window.xhrData);
   }
 
   mapPinMain.addEventListener('mousedown', dependencies.pin.onMapPinMainMouseDown);

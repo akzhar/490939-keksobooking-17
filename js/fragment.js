@@ -7,10 +7,17 @@
 
   function getRenderedPins(apartments) {
     var fragment = document.createDocumentFragment();
-    apartments.forEach(function (apartment) {
+    var PINS_COUNT_LIMIT = 5;
+
+    function renderPin(apartment, i) {
+      if (i >= PINS_COUNT_LIMIT) {
+        return;
+      }
       var pin = createPin(apartment);
       fragment.appendChild(pin);
-    });
+    }
+
+    apartments.forEach(renderPin);
     return fragment;
   }
 
