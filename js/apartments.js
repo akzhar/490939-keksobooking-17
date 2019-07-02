@@ -3,9 +3,9 @@
 (function () {
   var mapBlock = document.querySelector('.map');
 
-  function generateApartments(fragment) {
+  function generateApartments(offers) {
     var mapPins = mapBlock.querySelector('.map__pins');
-    mapPins.appendChild(fragment);
+    mapPins.appendChild(offers);
   }
 
   window.apartments = {

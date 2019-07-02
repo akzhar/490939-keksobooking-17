@@ -2,35 +2,29 @@
 
 (function () {
   var dependencies = {
+    data: window.data,
     apartments: window.apartments,
-    fragment: window.fragment
+    pin: window.pin,
+    map: window.map
   };
   var mapBlock = document.querySelector('.map');
   var typeFilter = mapBlock.querySelector('#housing-type');
 
   typeFilter.addEventListener('change', onTypeFilterChange);
 
-  function cleanMap() {
-    var mapPins = mapBlock.querySelector('.map__pins');
-    var pins = document.querySelectorAll('.map__pin');
-    pins.forEach(function (pin) {
-      mapPins.removeChild(pin);
-    });
-  }
-
   function onTypeFilterChange() {
-    var typeFilteredOffers = window.xhrData;
+    var typeFilteredOffers = dependencies.data.offers;
     if (typeFilter.value !== 'any') {
-      typeFilteredOffers = window.xhrData.filter(function (apartment) {
+      typeFilteredOffers = dependencies.data.offers.filter(function (apartment) {
         if (apartment.offer.type === typeFilter.value) {
           return apartment;
         }
         return null;
       });
     }
-    cleanMap();
-    window.renderedPins = dependencies.fragment.getRenderedPins(typeFilteredOffers);
-    dependencies.apartments.generateApartments(window.renderedPins);
+    dependencies.map.cleanMap();
+    dependencies.data.renderedPins = dependencies.pin.renderPins(typeFilteredOffers);
+    dependencies.apartments.generateApartments(dependencies.data.renderedPins);
   }
 
 })();
