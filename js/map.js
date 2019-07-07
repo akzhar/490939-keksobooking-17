@@ -7,7 +7,9 @@
     var mapPins = mapBlock.querySelector('.map__pins');
     var pins = mapPins.querySelectorAll('.map__pin');
     pins.forEach(function (pin) {
-      mapPins.removeChild(pin);
+      if (!pin.classList.contains('map__pin--main')) {
+        mapPins.removeChild(pin);
+      }
     });
   }
 
