@@ -24,7 +24,8 @@
     }
     dependencies.map.cleanMap();
     dependencies.data.renderedPins = dependencies.pin.renderPins(typeFilteredOffers);
-    dependencies.apartments.generateApartments(dependencies.data.renderedPins);
+    // добавить карты
+    dependencies.apartments.renderApartments(dependencies.data.renderedPins);
   }
 
 })();

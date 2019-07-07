@@ -2,13 +2,13 @@
 
 (function () {
   var mapBlock = document.querySelector('.map');
+  var mapPins = mapBlock.querySelector('.map__pins');
 
-  function generateApartments(offers) {
-    var mapPins = mapBlock.querySelector('.map__pins');
+  function renderApartments(offers) {
     mapPins.appendChild(offers);
   }
 
   window.apartments = {
-    generateApartments: generateApartments
+    renderApartments: renderApartments
   };
 })();
