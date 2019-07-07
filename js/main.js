@@ -4,6 +4,7 @@
   var dependencies = {
     mainPin: window.mainPin
   };
+
   var mapPinMain = document.querySelector('.map__pin--main');
 
   mapPinMain.addEventListener('mousedown', dependencies.mainPin.onMapPinMainMouseDown);

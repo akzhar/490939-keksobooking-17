@@ -2,7 +2,8 @@
 
 (function () {
   var URL = 'https://js.dump.academy/keksobooking/data';
-  var maxResponseTime = 10000;
+  var maxResponseTime = 5000;
+  var msInSecond = 1000;
   var Status = {
     OK: 200
   };
@@ -22,7 +23,7 @@
       onError('Произошла ошибка соединения');
     });
     xhr.addEventListener('timeout', function () {
-      onError('Запрос не успел выполниться за ' + xhr.timeout + ' мс');
+      onError('Запрос не успел выполниться за ' + xhr.timeout / msInSecond + ' c');
     });
     xhr.open('GET', URL);
     xhr.send();

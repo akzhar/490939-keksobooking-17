@@ -2,8 +2,6 @@
 
 (function () {
   var dependencies = {
-    pin: window.pin,
-    card: window.card,
     backend: window.backend
   };
 
@@ -24,10 +22,8 @@
   }
 
   function onSuccess(data) {
-    window.data.offers = data;
-    // объединить в 1
-    window.data.renderedPins = dependencies.pin.renderPins(data);
-    window.data.renderedCards = dependencies.card.renderCards(data);
+    // console.log('Success!!!'); // delete this row
+    window.data.OFFERS = data;
   }
 
   function loadData() {

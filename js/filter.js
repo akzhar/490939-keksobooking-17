@@ -3,19 +3,20 @@
 (function () {
   var dependencies = {
     data: window.data,
-    apartments: window.apartments,
     pin: window.pin,
     map: window.map
   };
+
   var mapBlock = document.querySelector('.map');
   var typeFilter = mapBlock.querySelector('#housing-type');
+  var mapPins = mapBlock.querySelector('.map__pins');
 
   typeFilter.addEventListener('change', onTypeFilterChange);
 
   function onTypeFilterChange() {
-    var typeFilteredOffers = dependencies.data.offers;
+    var typeFilteredOffers = dependencies.data.OFFERS;
     if (typeFilter.value !== 'any') {
-      typeFilteredOffers = dependencies.data.offers.filter(function (apartment) {
+      typeFilteredOffers = dependencies.data.OFFERS.filter(function (apartment) {
         if (apartment.offer.type === typeFilter.value) {
           return apartment;
         }
@@ -23,9 +24,7 @@
       });
     }
     dependencies.map.cleanMap();
-    dependencies.data.renderedPins = dependencies.pin.renderPins(typeFilteredOffers);
-    // добавить карты
-    dependencies.apartments.renderApartments(dependencies.data.renderedPins);
+    var renderedPins = dependencies.pin.renderPins(typeFilteredOffers);
+    mapPins.appendChild(renderedPins);
   }
-
 })();
