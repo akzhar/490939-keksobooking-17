@@ -28,17 +28,23 @@
     dependencies.data.MAP_LIMITS.xMax = mapBlock.offsetWidth;
   }
 
+  function addSelectEventListeners() {
+    var adForm = document.querySelector('.ad-form');
+    var typeSelect = adForm.querySelector('#type');
+    var timeInSelect = adForm.querySelector('#timein');
+    var timeOutSelect = adForm.querySelector('#timeout');
+    var roomsSelect = adForm.querySelector('#room_number');
+    typeSelect.addEventListener('change', dependencies.form.onTypeSelectChange);
+    timeInSelect.addEventListener('change', dependencies.form.onTimeSelectChange);
+    timeOutSelect.addEventListener('change', dependencies.form.onTimeSelectChange);
+    roomsSelect.addEventListener('change', dependencies.form.onRoomSelectChange);
+  }
+
   function onMapPinMainMouseUp() {
     if (dependencies.data.OFFERS) {
-      var adForm = document.querySelector('.ad-form');
-      var typeSelect = adForm.querySelector('#type');
-      var timeInSelect = adForm.querySelector('#timein');
-      var timeOutSelect = adForm.querySelector('#timeout');
       var renderedPins = dependencies.pin.renderPins(dependencies.data.OFFERS);
       mapPins.appendChild(renderedPins);
-      typeSelect.addEventListener('change', dependencies.form.onTypeSelectChanged);
-      timeInSelect.addEventListener('change', dependencies.form.onTimeInOutSelectChange);
-      timeOutSelect.addEventListener('change', dependencies.form.onTimeInOutSelectChange);
+      addSelectEventListeners();
       dependencies.form.unlockForm();
       mapBlock.classList.remove('map--faded');
       mapPinMain.removeEventListener('mouseup', onMapPinMainMouseUp);

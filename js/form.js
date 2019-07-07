@@ -10,6 +10,8 @@
   var timeInSelect = adForm.querySelector('#timein');
   var timeOutSelect = adForm.querySelector('#timeout');
   var priceInput = adForm.querySelector('#price');
+  var roomsSelect = adForm.querySelector('#room_number');
+  var capacitySelect = adForm.querySelector('#capacity');
 
   function unlockForm() {
     var inputs = document.querySelectorAll('input');
@@ -23,7 +25,7 @@
     adForm.classList.remove('ad-form--disabled');
   }
 
-  function onTypeSelectChanged() {
+  function onTypeSelectChange() {
     var selectedOptionIndex = typeSelect.selectedIndex;
     var selectedOption = typeSelect.querySelectorAll('option')[selectedOptionIndex];
     var minPrice = dependencies.data.MIN_PRICES[selectedOption.value];
@@ -31,15 +33,56 @@
     priceInput.placeholder = minPrice;
   }
 
-  function onTimeInOutSelectChange(evt) {
-    var connectedSelect = (evt.target === timeInSelect) ? timeOutSelect : timeInSelect;
-    var selectedOptionIndex = evt.target.selectedIndex;
-    connectedSelect.selectedIndex = selectedOptionIndex;
+  function onTimeSelectChange(evt) {
+    var targetSelect = evt.target;
+    var linkedSelect = (targetSelect === timeInSelect) ? timeOutSelect : timeInSelect;
+    var selectedValue = targetSelect.value;
+    linkedSelect.value = selectedValue;
+  }
+
+  function onRoomSelectChange() {
+    var ZERO_GUESTS = '0';
+    var HUNDRED__ROOMS = '100';
+    var CLASS_DISABLED = 'disabled';
+    var selectedValue = roomsSelect.value;
+    var linkedSelectChildren = [].slice.call(capacitySelect.children);
+
+    function disableOption(it) {
+      if (it.value > selectedValue || it.value === ZERO_GUESTS) {
+        it.setAttribute(CLASS_DISABLED, true);
+      }
+    }
+
+    function disableLinkedSelectOptions() {
+      linkedSelectChildren.forEach(function (it) {
+        it.removeAttribute(CLASS_DISABLED);
+        disableOption(it);
+      });
+      capacitySelect.value = selectedValue;
+    }
+
+    function disableLinkedSelectOptionsExceptVal() {
+      var exceptionVal = ZERO_GUESTS;
+      linkedSelectChildren.forEach(function (it) {
+        it.removeAttribute(CLASS_DISABLED);
+        if (it.value !== exceptionVal) {
+          it.setAttribute(CLASS_DISABLED, true);
+        }
+      });
+      capacitySelect.value = exceptionVal;
+    }
+
+    if (selectedValue === HUNDRED__ROOMS) {
+      disableLinkedSelectOptionsExceptVal();
+    } else {
+      disableLinkedSelectOptions();
+    }
   }
 
   window.form = {
     unlockForm: unlockForm,
-    onTypeSelectChanged: onTypeSelectChanged,
-    onTimeInOutSelectChange: onTimeInOutSelectChange
+    onTypeSelectChange: onTypeSelectChange,
+    onTimeSelectChange: onTimeSelectChange,
+    onRoomSelectChange: onRoomSelectChange
   };
 })();
