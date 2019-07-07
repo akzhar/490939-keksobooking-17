@@ -3,11 +3,12 @@
 (function () {
   var dependencies = {
     data: window.data,
-    apartments: window.apartments,
-    form: window.form
+    form: window.form,
+    pin: window.pin
   };
   var mapBlock = document.querySelector('.map');
   var mapPinMain = document.querySelector('.map__pin--main');
+  var mapPins = mapBlock.querySelector('.map__pins');
 
   function calculatePinCoords(pinObj) {
     var pinCoords = {
@@ -28,22 +29,20 @@
   }
 
   function onMapPinMainMouseUp() {
-    var adForm = document.querySelector('.ad-form');
-    var typeSelect = adForm.querySelector('#type');
-    var timeInSelect = adForm.querySelector('#timein');
-    var timeOutSelect = adForm.querySelector('#timeout');
-
-    // объединить в 1
-    dependencies.apartments.renderApartments(dependencies.data.renderedPins);
-    dependencies.apartments.renderApartments(dependencies.data.renderedCards);
-
-    typeSelect.addEventListener('change', dependencies.form.onTypeSelectChanged);
-    timeInSelect.addEventListener('change', dependencies.form.onTimeInOutSelectChange);
-    timeOutSelect.addEventListener('change', dependencies.form.onTimeInOutSelectChange);
-    dependencies.form.unlockForm();
-    mapBlock.classList.remove('map--faded');
-
-    mapPinMain.removeEventListener('mouseup', window.pin.onMapPinMainMouseUp);
+    if (dependencies.data.OFFERS) {
+      var adForm = document.querySelector('.ad-form');
+      var typeSelect = adForm.querySelector('#type');
+      var timeInSelect = adForm.querySelector('#timein');
+      var timeOutSelect = adForm.querySelector('#timeout');
+      var renderedPins = dependencies.pin.renderPins(dependencies.data.OFFERS);
+      mapPins.appendChild(renderedPins);
+      typeSelect.addEventListener('change', dependencies.form.onTypeSelectChanged);
+      timeInSelect.addEventListener('change', dependencies.form.onTimeInOutSelectChange);
+      timeOutSelect.addEventListener('change', dependencies.form.onTimeInOutSelectChange);
+      dependencies.form.unlockForm();
+      mapBlock.classList.remove('map--faded');
+      mapPinMain.removeEventListener('mouseup', onMapPinMainMouseUp);
+    }
   }
 
   function onMapPinMainMouseDown(evtMouseDown) {

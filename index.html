@@ -248,16 +248,15 @@ f
     </div>
   </template>
 
-<script src="js/utils.js"></script>
-<script src="js/backend.js"></script>
-<script src="js/pin.js"></script>
-<script src="js/card.js"></script>
-<script src="js/data.js"></script>
-<script src="js/apartments.js"></script>
-<script src="js/form.js"></script>
-<script src="js/mainpin.js"></script>
-<script src="js/map.js"></script>
-<script src="js/filter.js"></script>
-<script src="js/main.js"></script>
+<script src="js/utils.js"></script> <!-- no -->
+<script src="js/backend.js"></script> <!-- no -->
+<script src="js/map.js"></script> <!-- no -->
+<script src="js/data.js"></script> <!-- backend -->
+<script src="js/card.js"></script> <!-- data -->
+<script src="js/pin.js"></script> <!-- card -->
+<script src="js/form.js"></script> <!-- data, utils -->
+<script src="js/mainpin.js"></script> <!-- data, form, pin -->
+<script src="js/filter.js"></script> <!-- data, pin, map -->
+<script src="js/main.js"></script> <!-- mainPin -->
 </body>
 </html>

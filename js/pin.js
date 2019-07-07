@@ -1,6 +1,10 @@
 'use strict';
 
 (function () {
+  var dependencies = {
+    card: window.card
+  };
+
   var Pin = {
     WIDTH: 50,
     HEIGHT: 70
@@ -10,7 +14,7 @@
     var fragment = document.createDocumentFragment();
     var PINS_COUNT_LIMIT = 5;
     for (var i = 0; i < apartments.length && i < PINS_COUNT_LIMIT; i++) {
-      var pin = createPin(apartments[i]);
+      var pin = createPin(apartments[i], i);
       fragment.appendChild(pin);
     }
     return fragment;
@@ -22,10 +26,14 @@
     var pinImg = pin.querySelector('img');
     var pinX = apartment.location.x - Pin.WIDTH / 2;
     var pinY = apartment.location.y - Pin.HEIGHT;
+    var title = apartment.offer.title;
     pin.style.left = pinX + 'px';
     pin.style.top = pinY + 'px';
     pinImg.src = apartment.author.avatar;
-    pinImg.alt = 'заголовок объявления'; // to be filled in the future
+    pinImg.alt = title;
+    pin.addEventListener('click', function () {
+      dependencies.card.openPopup(title);
+    });
     return pin;
   }
 

@@ -3,13 +3,15 @@
 (function () {
   var mapBlock = document.querySelector('.map');
 
+  function cleanMap() {
+    var mapPins = mapBlock.querySelector('.map__pins');
+    var pins = mapPins.querySelectorAll('.map__pin');
+    pins.forEach(function (pin) {
+      mapPins.removeChild(pin);
+    });
+  }
+
   window.map = {
-    cleanMap: function () {
-      var mapPins = mapBlock.querySelector('.map__pins');
-      var pins = mapPins.querySelectorAll('.map__pin');
-      pins.forEach(function (pin) {
-        mapPins.removeChild(pin);
-      });
-    }
+    cleanMap: cleanMap
   };
 })();
