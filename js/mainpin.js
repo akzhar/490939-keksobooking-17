@@ -28,9 +28,21 @@
   }
 
   function onMapPinMainMouseUp() {
-    dependencies.apartments.generateApartments(dependencies.data.renderedPins);
+    var adForm = document.querySelector('.ad-form');
+    var typeSelect = adForm.querySelector('#type');
+    var timeInSelect = adForm.querySelector('#timein');
+    var timeOutSelect = adForm.querySelector('#timeout');
+
+    // объединить в 1
+    dependencies.apartments.renderApartments(dependencies.data.renderedPins);
+    dependencies.apartments.renderApartments(dependencies.data.renderedCards);
+
+    typeSelect.addEventListener('change', dependencies.form.onTypeSelectChanged);
+    timeInSelect.addEventListener('change', dependencies.form.onTimeInOutSelectChange);
+    timeOutSelect.addEventListener('change', dependencies.form.onTimeInOutSelectChange);
     dependencies.form.unlockForm();
     mapBlock.classList.remove('map--faded');
+
     mapPinMain.removeEventListener('mouseup', window.pin.onMapPinMainMouseUp);
   }
 
@@ -75,8 +87,8 @@
   }
 
   window.mainPin = {
-    updateMapLimits: updateMapLimits,
+    onMapPinMainMouseDown: onMapPinMainMouseDown,
     onMapPinMainMouseUp: onMapPinMainMouseUp,
-    onMapPinMainMouseDown: onMapPinMainMouseDown
+    updateMapLimits: updateMapLimits
   };
 })();

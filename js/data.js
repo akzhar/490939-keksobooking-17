@@ -3,6 +3,7 @@
 (function () {
   var dependencies = {
     pin: window.pin,
+    card: window.card,
     backend: window.backend
   };
 
@@ -13,16 +14,27 @@
     var templateErr = document.getElementById('error').content.querySelector('.error');
     var err = templateErr.cloneNode(true);
     var errMsg = err.querySelector('.error__message');
+    var errbtn = err.querySelector('.error__button');
     errMsg.textContent = msgText;
+    errbtn.addEventListener('click', function () {
+      main.removeChild(err);
+      loadData();
+    });
     main.appendChild(err);
   }
 
   function onSuccess(data) {
     window.data.offers = data;
+    // объединить в 1
     window.data.renderedPins = dependencies.pin.renderPins(data);
+    window.data.renderedCards = dependencies.card.renderCards(data);
   }
 
-  dependencies.backend.load(onSuccess, onError);
+  function loadData() {
+    dependencies.backend.load(onSuccess, onError);
+  }
+
+  loadData();
 
   window.data = {
     MIN_PRICES: {

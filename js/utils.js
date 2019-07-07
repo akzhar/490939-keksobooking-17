@@ -11,9 +11,9 @@
     return key;
   }
 
-  function removeAttributes(objectsArr, attributeStr) {
-    for (var i = 0; i < objectsArr.length; i++) {
-      objectsArr[i].removeAttribute(attributeStr);
+  function removeAttributes(arr, attribute) {
+    for (var i = 0; i < arr.length; i++) {
+      arr[i].removeAttribute(attribute);
     }
   }
 
