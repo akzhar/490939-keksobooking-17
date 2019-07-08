@@ -10,19 +10,18 @@
   function onError(msgText) {
     var main = document.querySelector('main');
     var templateErr = document.getElementById('error').content.querySelector('.error');
-    var err = templateErr.cloneNode(true);
-    var errMsg = err.querySelector('.error__message');
-    var errbtn = err.querySelector('.error__button');
+    var msg = templateErr.cloneNode(true);
+    var errMsg = msg.querySelector('.error__message');
+    var errbtn = msg.querySelector('.error__button');
     errMsg.textContent = msgText;
     errbtn.addEventListener('click', function () {
-      main.removeChild(err);
+      main.removeChild(msg);
       loadData();
     });
-    main.appendChild(err);
+    main.appendChild(msg);
   }
 
   function onSuccess(data) {
-    // console.log('Success!!!'); // delete this row
     window.data.OFFERS = data;
   }
 
@@ -44,6 +43,15 @@
       xMax: mapBlock.offsetWidth,
       yMin: 130,
       yMax: 630,
+    },
+    ESC_KEYCODE: 27,
+    PIN_START_COORDS: {
+      x: 375,
+      y: 570
+    },
+    PIN_SIZE: {
+      WIDTH: 50,
+      HEIGHT: 70
     }
   };
 })();

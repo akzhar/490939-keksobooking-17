@@ -2,12 +2,13 @@
 
 (function () {
   var dependencies = {
+    dnd: window.dnd,
     mainPin: window.mainPin
   };
 
   var mapPinMain = document.querySelector('.map__pin--main');
 
-  mapPinMain.addEventListener('mousedown', dependencies.mainPin.onMapPinMainMouseDown);
-  mapPinMain.addEventListener('mouseup', dependencies.mainPin.onMapPinMainMouseUp);
-  window.addEventListener('resize', dependencies.mainPin.updateMapLimits);
+  dependencies.mainPin.fillPinCenterCoordsInAddress(mapPinMain);
+  mapPinMain.addEventListener('mousedown', dependencies.dnd.onMapPinMainMouseDown);
+  mapPinMain.addEventListener('mouseup', dependencies.dnd.onMapPinMainMouseUp);
 })();

@@ -2,12 +2,8 @@
 
 (function () {
   var dependencies = {
+    data: window.data,
     card: window.card
-  };
-
-  var Pin = {
-    WIDTH: 50,
-    HEIGHT: 70
   };
 
   function renderPins(apartments) {
@@ -24,8 +20,8 @@
     var templatePin = document.getElementById('pin').content.querySelector('.map__pin');
     var pin = templatePin.cloneNode(true);
     var pinImg = pin.querySelector('img');
-    var pinX = apartment.location.x - Pin.WIDTH / 2;
-    var pinY = apartment.location.y - Pin.HEIGHT;
+    var pinX = apartment.location.x - dependencies.data.PIN_SIZE.WIDTH / 2;
+    var pinY = apartment.location.y - dependencies.data.PIN_SIZE.HEIGHT;
     var title = apartment.offer.title;
     pin.style.left = pinX + 'px';
     pin.style.top = pinY + 'px';

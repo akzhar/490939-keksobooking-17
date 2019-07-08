@@ -17,9 +17,16 @@
     }
   }
 
+  function addAttributes(arr, attribute, val) {
+    for (var i = 0; i < arr.length; i++) {
+      arr[i].setAttribute(attribute, val);
+    }
+  }
+
   window.utils = {
     getRandomNumber: getRandomNumber,
     getRandomKeyInObject: getRandomKeyInObject,
-    removeAttributes: removeAttributes
+    removeAttributes: removeAttributes,
+    addAttributes: addAttributes
   };
 })();
