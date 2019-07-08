@@ -2,10 +2,10 @@
 
 (function () {
   var dependencies = {
-    data: window.data
+    data: window.data,
+    map: window.map
   };
 
-  var ESC_KEYCODE = 27;
   var mapBlock = document.querySelector('.map');
   var mapPins = mapBlock.querySelector('.map__pins');
 
@@ -84,7 +84,7 @@
   }
 
   function onEscKeyDown(evt) {
-    if (evt.keyCode === ESC_KEYCODE) {
+    if (evt.keyCode === dependencies.data.ESC_KEYCODE) {
       window.removeEventListener('keydown', onEscKeyDown);
       closePopup();
     }
@@ -96,6 +96,7 @@
   }
 
   function openPopup(title) {
+    dependencies.map.cleanCards();
     var apartment = dependencies.data.OFFERS.filter(function (it) {
       if (it.offer.title === title) {
         return it;

@@ -117,7 +117,7 @@ f
         </fieldset>
         <fieldset class="ad-form__element">
           <label class="ad-form__label" for="price">Цена за ночь, руб.</label>
-          <input id="price" name="price" type="number" placeholder="5000" min="" max="1000000" required disabled>
+          <input id="price" name="price" type="number" placeholder="1000" min="1000" max="1000000" required disabled>
         </fieldset>
         <fieldset class="ad-form__element ad-form__element--time">
           <label class="ad-form__label" for="timein">Время заезда и выезда</label>
@@ -252,11 +252,13 @@ f
 <script src="js/backend.js"></script> <!-- no -->
 <script src="js/map.js"></script> <!-- no -->
 <script src="js/data.js"></script> <!-- backend -->
-<script src="js/card.js"></script> <!-- data -->
-<script src="js/pin.js"></script> <!-- card -->
-<script src="js/form.js"></script> <!-- data, utils -->
-<script src="js/mainpin.js"></script> <!-- data, form, pin -->
+<script src="js/card.js"></script> <!-- data, map -->
+<script src="js/pin.js"></script> <!-- data, card -->
+<script src="js/validation.js"></script> <!-- data -->
+<script src="js/mainpin.js"></script> <!-- data, validation -->
+<script src="js/form.js"></script> <!-- backend, data, map, utils, mainpin -->
+<script src="js/dnd.js"></script> <!-- data, form, pin, mainpin, validation, map -->
 <script src="js/filter.js"></script> <!-- data, pin, map -->
-<script src="js/main.js"></script> <!-- mainPin -->
+<script src="js/main.js"></script> <!-- dnd, mainPin -->
 </body>
 </html>
