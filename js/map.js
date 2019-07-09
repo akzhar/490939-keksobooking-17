@@ -5,33 +5,34 @@
     data: window.data
   };
 
+  var MAIN_PIN_CLASS = 'map__pin--main';
   var mapBlock = document.querySelector('.map');
   var mapPins = mapBlock.querySelector('.map__pins');
 
-  function cleanMap() {
+  function clean() {
     var pins = mapPins.querySelectorAll('.map__pin');
     pins.forEach(function (pin) {
-      if (!pin.classList.contains('map__pin--main')) {
+      if (!pin.classList.contains(MAIN_PIN_CLASS)) {
         mapPins.removeChild(pin);
       }
     });
-    cleanCards();
+    removeCards();
   }
 
-  function cleanCards() {
+  function removeCards() {
     var cards = mapPins.querySelectorAll('.map__card');
     cards.forEach(function (card) {
       mapPins.removeChild(card);
     });
   }
 
-  function updateMapLimits() {
-    dependencies.data.MAP_LIMITS.xMax = mapBlock.offsetWidth;
+  function updateLimits() {
+    dependencies.data.MapLimit.X_MAX = mapBlock.offsetWidth;
   }
 
   window.map = {
-    updateMapLimits: updateMapLimits,
-    cleanMap: cleanMap,
-    cleanCards: cleanCards
+    clean: clean,
+    updateLimits: updateLimits,
+    removeCards: removeCards
   };
 })();

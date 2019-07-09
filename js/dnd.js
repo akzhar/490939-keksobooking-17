@@ -9,85 +9,86 @@
     validation: window.validation,
     map: window.map
   };
+
   var MAP_FADED_CLASS = 'map--faded';
+  var POSITION_UNIT = 'px';
   var mapBlock = document.querySelector('.map');
-  var mapPinMain = document.querySelector('.map__pin--main');
+  var mainPin = mapBlock.querySelector('.map__pin--main');
   var mapPins = mapBlock.querySelector('.map__pins');
   var adForm = document.querySelector('.ad-form');
+  var typeSelect = adForm.querySelector('#type');
+  var timeInSelect = adForm.querySelector('#timein');
+  var timeOutSelect = adForm.querySelector('#timeout');
+  var roomsSelect = adForm.querySelector('#room_number');
+  var currentCoords = {};
 
   function addSelectEventListeners() {
-    var typeSelect = adForm.querySelector('#type');
-    var timeInSelect = adForm.querySelector('#timein');
-    var timeOutSelect = adForm.querySelector('#timeout');
-    var roomsSelect = adForm.querySelector('#room_number');
     typeSelect.addEventListener('change', dependencies.validation.onTypeSelectChange);
     timeInSelect.addEventListener('change', dependencies.validation.onTimeSelectChange);
     timeOutSelect.addEventListener('change', dependencies.validation.onTimeSelectChange);
-    roomsSelect.addEventListener('change', dependencies.validation.onRoomSelectChange);
+    roomsSelect.addEventListener('change', dependencies.validation.onRoomsSelectChange);
   }
 
-  function onMapPinMainMouseUp() {
-    if (!dependencies.data.OFFERS) {
-      return;
+  function onDocumentMouseMove(evtMove) {
+    var shift = {
+      x: currentCoords.x - evtMove.clientX,
+      y: currentCoords.y - evtMove.clientY
+    };
+    var pinMainTop = mainPin.offsetTop - shift.y;
+    var pinMainLeft = mainPin.offsetLeft - shift.x;
+    var pinHeight = mainPin.offsetHeight;
+    var pinWidth = mainPin.offsetWidth;
+    if (pinMainTop < (dependencies.data.MapLimit.Y_MIN - pinHeight)) {
+      pinMainTop = dependencies.data.MapLimit.Y_MIN - pinHeight;
     }
+    if (pinMainTop > (dependencies.data.MapLimit.Y_MAX - pinHeight)) {
+      pinMainTop = dependencies.data.MapLimit.Y_MAX - pinHeight;
+    }
+    if (pinMainLeft < (dependencies.data.MapLimit.X_MIN - pinWidth / 2)) {
+      pinMainLeft = dependencies.data.MapLimit.X_MIN - pinWidth / 2;
+    }
+    if (pinMainLeft > (dependencies.data.MapLimit.X_MAX - pinWidth / 2)) {
+      pinMainLeft = dependencies.data.MapLimit.X_MAX - pinWidth / 2;
+    }
+    currentCoords.x = evtMove.clientX;
+    currentCoords.y = evtMove.clientY;
+    mainPin.style.top = pinMainTop + POSITION_UNIT;
+    mainPin.style.left = pinMainLeft + POSITION_UNIT;
+  }
+
+  function onDocumentMouseUp() {
+    dependencies.mainPin.fillCoordsInAddress(mainPin);
+    document.removeEventListener('mousemove', onDocumentMouseMove);
+    document.removeEventListener('mouseup', onDocumentMouseUp);
+  }
+
+  function onMainPinMouseUp() {
     if (!mapBlock.classList.contains(MAP_FADED_CLASS)) {
       return;
     }
-    var renderedPins = dependencies.pin.renderPins(dependencies.data.OFFERS);
+    var renderedPins = dependencies.pin.render(dependencies.data.OFFERS);
     mapPins.appendChild(renderedPins);
     addSelectEventListeners();
-    dependencies.form.unlockForm();
+    dependencies.form.unlock();
     mapBlock.classList.remove(MAP_FADED_CLASS);
-    adForm.addEventListener('submit', dependencies.form.onFormSubmit);
-    window.addEventListener('resize', dependencies.map.updateMapLimits);
-    // mapPinMain.removeEventListener('mouseup', onMapPinMainMouseUp);
+    adForm.addEventListener('submit', dependencies.form.onSubmit);
+    window.addEventListener('resize', dependencies.map.updateLimits);
+    mainPin.removeEventListener('mouseup', onMainPinMouseUp);
   }
 
-  function onMapPinMainMouseDown(evtMouseDown) {
+  function onMainPinMouseDown(evtMouseDown) {
     if (!dependencies.data.OFFERS) {
       return;
     }
-    var currentCoords = {
-      x: evtMouseDown.clientX,
-      y: evtMouseDown.clientY,
-    };
-    var onDocumentMouseMove = function (evtMove) {
-      var shift = {
-        x: currentCoords.x - evtMove.clientX,
-        y: currentCoords.y - evtMove.clientY
-      };
-      var pinMainTop = mapPinMain.offsetTop - shift.y;
-      var pinMainLeft = mapPinMain.offsetLeft - shift.x;
-      var pinHeight = mapPinMain.offsetHeight;
-      var pinWidth = mapPinMain.offsetWidth;
-      if (pinMainTop < (dependencies.data.MAP_LIMITS.yMin - pinHeight)) {
-        pinMainTop = dependencies.data.MAP_LIMITS.yMin - pinHeight;
-      }
-      if (pinMainTop > (dependencies.data.MAP_LIMITS.yMax - pinHeight)) {
-        pinMainTop = dependencies.data.MAP_LIMITS.yMax - pinHeight;
-      }
-      if (pinMainLeft < (dependencies.data.MAP_LIMITS.xMin - pinWidth / 2)) {
-        pinMainLeft = dependencies.data.MAP_LIMITS.xMin - pinWidth / 2;
-      }
-      if (pinMainLeft > (dependencies.data.MAP_LIMITS.xMax - pinWidth / 2)) {
-        pinMainLeft = dependencies.data.MAP_LIMITS.xMax - pinWidth / 2;
-      }
-      currentCoords.x = evtMove.clientX;
-      currentCoords.y = evtMove.clientY;
-      mapPinMain.style.top = pinMainTop + 'px';
-      mapPinMain.style.left = pinMainLeft + 'px';
-    };
-    var onDocumentMouseUp = function () {
-      dependencies.mainPin.fillPinCoordsInAddress(mapPinMain);
-      document.removeEventListener('mousemove', onDocumentMouseMove);
-      document.removeEventListener('mouseup', onDocumentMouseUp);
-    };
+    currentCoords.x = evtMouseDown.clientX;
+    currentCoords.y = evtMouseDown.clientY;
     document.addEventListener('mousemove', onDocumentMouseMove);
     document.addEventListener('mouseup', onDocumentMouseUp);
+    mainPin.addEventListener('mouseup', onMainPinMouseUp);
   }
 
   window.dnd = {
-    onMapPinMainMouseDown: onMapPinMainMouseDown,
-    onMapPinMainMouseUp: onMapPinMainMouseUp
+    onMainPinMouseDown: onMainPinMouseDown,
+    onMainPinMouseUp: onMainPinMouseUp
   };
 })();
