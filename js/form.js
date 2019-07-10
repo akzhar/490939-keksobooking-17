@@ -19,6 +19,7 @@
   var mapBlock = main.querySelector('.map');
   var inputs = adForm.querySelectorAll('input');
   var selects = document.querySelectorAll('select');
+  var checkboxes = mapBlock.querySelectorAll('input[type="checkbox"]');
   var textarea = adForm.querySelector('textarea');
   var sumbitBtn = adForm.querySelector('.ad-form__submit');
   var titleInput = adForm.querySelector('#title');
@@ -40,6 +41,7 @@
   function lock() {
     dependencies.utils.addAttributes(inputs, 'disabled', true);
     dependencies.utils.addAttributes(selects, 'disabled', true);
+    dependencies.utils.addAttributes(checkboxes, 'disabled', true);
     textarea.setAttribute('disabled', true);
     sumbitBtn.setAttribute('disabled', true);
     adForm.classList.add(FORM_DISABLED_CLASS);
@@ -89,6 +91,7 @@
   function unlock() {
     dependencies.utils.removeAttributes(inputs, 'disabled');
     dependencies.utils.removeAttributes(selects, 'disabled');
+    dependencies.utils.removeAttributes(checkboxes, 'disabled');
     textarea.removeAttribute('disabled');
     sumbitBtn.removeAttribute('disabled');
     adForm.classList.remove(FORM_DISABLED_CLASS);
