@@ -9,6 +9,7 @@
   var ESC_KEYCODE = 27;
   var FEATURE_CLASS = 'popup__feature';
   var PHOTO_CLASS = 'popup__photo';
+  var ACTIVE_PIN_CLASS = 'map__pin--active';
   var PRICE_UNIT = ' ₽/ночь';
   var mapBlock = document.querySelector('.map');
   var mapPins = mapBlock.querySelector('.map__pins');
@@ -84,18 +85,15 @@
 
   function close() {
     var popup = mapPins.querySelector('.popup');
+    var pin = mapPins.querySelector('.' + ACTIVE_PIN_CLASS);
+    pin.classList.remove(ACTIVE_PIN_CLASS);
     mapPins.removeChild(popup);
   }
 
-  function open(title) {
-    dependencies.map.removeCards();
-    var data = dependencies.data.OFFERS.filter(function (it) {
-      if (it.offer.title === title) {
-        return it;
-      }
-      return null;
-    })[0];
+  function open(i) {
+    var data = dependencies.data.renderedOffers[i];
     var popup = render(data);
+    dependencies.map.removeCards();
     mapPins.appendChild(popup);
   }
 

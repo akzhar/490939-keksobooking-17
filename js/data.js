@@ -24,6 +24,7 @@
   load();
 
   window.data = {
+    renderedOffers: {},
     Default: {
       TITLE: '',
       TYPE: 'flat',

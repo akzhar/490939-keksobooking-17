@@ -14,29 +14,29 @@
     pinMain.style.left = dependencies.data.PinStart.Y + POSITION_UNIT;
   }
 
-  function getPinCenterCoords(pinObj) {
+  function getPinCenterCoords() {
     var pinCenterCoords = {
-      x: Math.floor(pinObj.offsetLeft + pinObj.offsetWidth / 2),
-      y: Math.floor(pinObj.offsetTop + pinObj.offsetHeight / 2)
+      x: Math.floor(pinMain.offsetLeft + pinMain.offsetWidth / 2),
+      y: Math.floor(pinMain.offsetTop + pinMain.offsetHeight / 2)
     };
     return pinCenterCoords;
   }
 
-  function getPinCoords(pinObj) {
+  function getPinCoords() {
     var pinCoords = {
-      x: Math.floor(pinObj.offsetLeft + pinObj.offsetWidth / 2),
-      y: Math.floor(pinObj.offsetTop + pinObj.offsetHeight)
+      x: Math.floor(pinMain.offsetLeft + pinMain.offsetWidth / 2),
+      y: Math.floor(pinMain.offsetTop + pinMain.offsetHeight)
     };
     return pinCoords;
   }
 
-  function fillCenterCoordsInAddress(pinObj) {
-    var pinCenterCoords = getPinCenterCoords(pinObj);
+  function fillCenterCoordsInAddress() {
+    var pinCenterCoords = getPinCenterCoords();
     addressInput.value = pinCenterCoords.x + ', ' + pinCenterCoords.y;
   }
 
-  function fillCoordsInAddress(pinObj) {
-    var pinCoords = getPinCoords(pinObj);
+  function fillCoordsInAddress() {
+    var pinCoords = getPinCoords();
     addressInput.value = pinCoords.x + ', ' + pinCoords.y;
   }
   window.mainPin = {

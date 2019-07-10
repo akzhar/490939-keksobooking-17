@@ -8,7 +8,8 @@
     utils: window.utils,
     mainPin: window.mainPin,
     filter: window.filter,
-    message: window.message
+    message: window.message,
+    validation: window.validation
   };
 
   var FORM_DISABLED_CLASS = 'ad-form--disabled';
@@ -16,7 +17,6 @@
   var main = document.querySelector('main');
   var adForm = main.querySelector('.ad-form');
   var mapBlock = main.querySelector('.map');
-  var mapPinMain = mapBlock.querySelector('.map__pin--main');
   var inputs = adForm.querySelectorAll('input');
   var selects = document.querySelectorAll('select');
   var textarea = adForm.querySelector('textarea');
@@ -30,6 +30,12 @@
   var roomsSelect = adForm.querySelector('#room_number');
   var capacitySelect = adForm.querySelector('#capacity');
   var features = adForm.querySelectorAll('input[name="features"]');
+  var resetBtn = adForm.querySelector('.ad-form__reset');
+
+  function onResetBtnClick(evt) {
+    evt.preventDefault();
+    makePageInactive();
+  }
 
   function lock() {
     dependencies.utils.addAttributes(inputs, 'disabled', true);
@@ -45,6 +51,7 @@
     typeSelect.value = dependencies.data.Default.TYPE;
     priceInput.value = dependencies.data.Default.PRICE;
     roomsSelect.value = dependencies.data.Default.ROOMS_GUESTS;
+    dependencies.validation.onRoomsSelectChange();
     capacitySelect.value = dependencies.data.Default.ROOMS_GUESTS;
     descriptionTextarea.value = dependencies.data.Default.DESCRIPTION;
     timeInSelect.value = dependencies.data.Default.TIME_IN_OUT;
@@ -54,18 +61,23 @@
     });
   }
 
-  function onSuccess() {
-    dependencies.message.isSuccessSave = true;
-    dependencies.message.addWindowListeners();
+  function makePageInactive() {
     clean();
     lock();
     dependencies.mainPin.resetCoords();
-    dependencies.mainPin.fillCenterCoordsInAddress(mapPinMain);
+    dependencies.mainPin.fillCenterCoordsInAddress();
     dependencies.map.clean();
     mapBlock.classList.add(MAP_FADED_CLASS);
-    adForm.removeEventListener('load', onSubmit);
+    resetBtn.removeEventListener('click', onResetBtnClick);
+    adForm.removeEventListener('submit', onSubmit);
     window.removeEventListener('resize', dependencies.map.updateLimits);
+  }
+
+  function onSuccess() {
+    dependencies.message.isSuccessSave = true;
+    dependencies.message.addWindowListeners();
     dependencies.message.showSuccess();
+    makePageInactive();
   }
 
   function onError(msgText) {
@@ -90,6 +102,7 @@
 
   window.form = {
     unlock: unlock,
-    onSubmit: onSubmit
+    onSubmit: onSubmit,
+    onResetBtnClick: onResetBtnClick
   };
 })();

@@ -20,6 +20,7 @@
   var timeInSelect = adForm.querySelector('#timein');
   var timeOutSelect = adForm.querySelector('#timeout');
   var roomsSelect = adForm.querySelector('#room_number');
+  var resetBtn = adForm.querySelector('.ad-form__reset');
   var currentCoords = {};
 
   function addSelectEventListeners() {
@@ -57,7 +58,7 @@
   }
 
   function onDocumentMouseUp() {
-    dependencies.mainPin.fillCoordsInAddress(mainPin);
+    dependencies.mainPin.fillCoordsInAddress();
     document.removeEventListener('mousemove', onDocumentMouseMove);
     document.removeEventListener('mouseup', onDocumentMouseUp);
   }
@@ -71,6 +72,7 @@
     addSelectEventListeners();
     dependencies.form.unlock();
     mapBlock.classList.remove(MAP_FADED_CLASS);
+    resetBtn.addEventListener('click', dependencies.form.onResetBtnClick);
     adForm.addEventListener('submit', dependencies.form.onSubmit);
     window.addEventListener('resize', dependencies.map.updateLimits);
     mainPin.removeEventListener('mouseup', onMainPinMouseUp);
