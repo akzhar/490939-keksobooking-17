@@ -5,6 +5,9 @@
     data: window.data
   };
 
+  var CAPACITY_VALUE_EXCEPTION = '0';
+  var ROOMS_VALUE_EXCEPTION = '100';
+  var DISABLED_ATTRIBUTE = 'disabled';
   var adForm = document.querySelector('.ad-form');
   var typeSelect = adForm.querySelector('#type');
   var timeInSelect = adForm.querySelector('#timein');
@@ -12,11 +15,12 @@
   var priceInput = adForm.querySelector('#price');
   var roomsSelect = adForm.querySelector('#room_number');
   var capacitySelect = adForm.querySelector('#capacity');
+  var conectedSelectChildren = [].slice.call(capacitySelect.children);
 
   function onTypeSelectChange() {
-    var selectedOptionIndex = typeSelect.selectedIndex;
-    var selectedOption = typeSelect.querySelectorAll('option')[selectedOptionIndex];
-    var minPrice = dependencies.data.MIN_PRICES[selectedOption.value];
+    var selectedOption = typeSelect.querySelectorAll('option')[typeSelect.selectedIndex];
+    var type = selectedOption.value.toUpperCase();
+    var minPrice = dependencies.data.MinPrice[type];
     priceInput.min = minPrice;
     priceInput.placeholder = minPrice;
   }
@@ -24,52 +28,30 @@
   function onTimeSelectChange(evt) {
     var targetSelect = evt.target;
     var conectedSelect = (targetSelect === timeInSelect) ? timeOutSelect : timeInSelect;
-    var selectedValue = targetSelect.value;
-    conectedSelect.value = selectedValue;
+    conectedSelect.value = targetSelect.value;
   }
 
-  function onRoomSelectChange() {
-    var CAPACITY_SELECT_EXCEPTION = '0';
-    var ROOMS_SELECT_EXCEPTION = '100';
-    var DISABLED_CLASS = 'disabled';
-    var selectedValue = roomsSelect.value;
-    var conectedSelectChildren = [].slice.call(capacitySelect.children);
-
-    function disableOption(it) {
-      if (it.value > selectedValue || it.value === CAPACITY_SELECT_EXCEPTION) {
-        it.setAttribute(DISABLED_CLASS, true);
+  function onRoomsSelectChange() {
+    var roomsValue = roomsSelect.value;
+    var isException = (roomsValue === ROOMS_VALUE_EXCEPTION);
+    if (isException) {
+      roomsValue = CAPACITY_VALUE_EXCEPTION;
+    }
+    conectedSelectChildren.forEach(function (it) {
+      it.removeAttribute(DISABLED_ATTRIBUTE);
+      var ExceptionCondition = (it.value !== CAPACITY_VALUE_EXCEPTION);
+      var StandardCondition = (it.value > roomsValue || it.value === CAPACITY_VALUE_EXCEPTION);
+      var condition = (isException) ? ExceptionCondition : StandardCondition;
+      if (condition) {
+        it.setAttribute(DISABLED_ATTRIBUTE, true);
       }
-    }
-
-    function disableconectedSelectOptions() {
-      conectedSelectChildren.forEach(function (it) {
-        it.removeAttribute(DISABLED_CLASS);
-        disableOption(it);
-      });
-      capacitySelect.value = selectedValue;
-    }
-
-    function disableconectedSelectOptionsExceptVal() {
-      var exceptionVal = CAPACITY_SELECT_EXCEPTION;
-      conectedSelectChildren.forEach(function (it) {
-        it.removeAttribute(DISABLED_CLASS);
-        if (it.value !== exceptionVal) {
-          it.setAttribute(DISABLED_CLASS, true);
-        }
-      });
-      capacitySelect.value = exceptionVal;
-    }
-
-    if (selectedValue === ROOMS_SELECT_EXCEPTION) {
-      disableconectedSelectOptionsExceptVal();
-    } else {
-      disableconectedSelectOptions();
-    }
+    });
+    capacitySelect.value = roomsValue;
   }
 
   window.validation = {
     onTypeSelectChange: onTypeSelectChange,
     onTimeSelectChange: onTimeSelectChange,
-    onRoomSelectChange: onRoomSelectChange
+    onRoomsSelectChange: onRoomsSelectChange
   };
 })();

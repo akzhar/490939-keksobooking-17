@@ -6,133 +6,106 @@
     data: window.data,
     map: window.map,
     utils: window.utils,
-    mainPin: window.mainPin
+    mainPin: window.mainPin,
+    filter: window.filter,
+    message: window.message,
+    validation: window.validation
   };
 
-  var isSuccessSave;
-  var adForm = document.querySelector('.ad-form');
-  var mapBlock = document.querySelector('.map');
-  var mapPinMain = document.querySelector('.map__pin--main');
-  var inputs = document.querySelectorAll('input');
-  var selects = document.querySelectorAll('select');
-  var textarea = document.querySelector('textarea');
-  var sumbitBtn = document.querySelector('.ad-form__submit');
+  var FORM_DISABLED_CLASS = 'ad-form--disabled';
+  var MAP_FADED_CLASS = 'map--faded';
   var main = document.querySelector('main');
+  var adForm = main.querySelector('.ad-form');
+  var mapBlock = main.querySelector('.map');
+  var inputs = adForm.querySelectorAll('input');
+  var selects = document.querySelectorAll('select');
+  var checkboxes = mapBlock.querySelectorAll('input[type="checkbox"]');
+  var textarea = adForm.querySelector('textarea');
+  var sumbitBtn = adForm.querySelector('.ad-form__submit');
+  var titleInput = adForm.querySelector('#title');
+  var priceInput = adForm.querySelector('#price');
+  var descriptionTextarea = adForm.querySelector('#description');
+  var typeSelect = adForm.querySelector('#type');
+  var timeInSelect = adForm.querySelector('#timein');
+  var timeOutSelect = adForm.querySelector('#timeout');
+  var roomsSelect = adForm.querySelector('#room_number');
+  var capacitySelect = adForm.querySelector('#capacity');
+  var features = adForm.querySelectorAll('input[name="features"]');
+  var resetBtn = adForm.querySelector('.ad-form__reset');
 
-  function unlockForm() {
-    dependencies.utils.removeAttributes(inputs, 'disabled');
-    dependencies.utils.removeAttributes(selects, 'disabled');
-    textarea.removeAttribute('disabled');
-    sumbitBtn.removeAttribute('disabled');
-    adForm.classList.remove('ad-form--disabled');
+  function onResetBtnClick(evt) {
+    evt.preventDefault();
+    makePageInactive();
   }
 
-  function lockForm() {
+  function lock() {
     dependencies.utils.addAttributes(inputs, 'disabled', true);
     dependencies.utils.addAttributes(selects, 'disabled', true);
+    dependencies.utils.addAttributes(checkboxes, 'disabled', true);
     textarea.setAttribute('disabled', true);
     sumbitBtn.setAttribute('disabled', true);
-    adForm.classList.add('ad-form--disabled');
+    adForm.classList.add(FORM_DISABLED_CLASS);
+    dependencies.filter.switchOff();
   }
 
-  function clearFormData() {
-    var Default = {
-      title: '',
-      type: 'flat',
-      price: '',
-      roomsAndGuests: '3',
-      timeInOut: '12:00',
-      description: ''
-    };
-    var titleInput = adForm.querySelector('#title');
-    var priceInput = adForm.querySelector('#price');
-    var descriptionTextarea = adForm.querySelector('#description');
-    var typeSelect = adForm.querySelector('#type');
-    var timeInSelect = adForm.querySelector('#timein');
-    var timeOutSelect = adForm.querySelector('#timeout');
-    var roomsSelect = adForm.querySelector('#room_number');
-    var capacitySelect = adForm.querySelector('#capacity');
-    var features = adForm.querySelectorAll('input[name="features"]');
-    titleInput.value = Default.title;
-    typeSelect.value = Default.type;
-    priceInput.value = Default.price;
-    roomsSelect.value = Default.roomsAndGuests;
-    capacitySelect.value = Default.roomsAndGuests;
-    descriptionTextarea.value = Default.description;
-    timeInSelect.value = Default.timeInOut;
-    timeOutSelect.value = Default.timeInOut;
+  function clean() {
+    titleInput.value = dependencies.data.Default.TITLE;
+    typeSelect.value = dependencies.data.Default.TYPE;
+    priceInput.value = dependencies.data.Default.PRICE;
+    roomsSelect.value = dependencies.data.Default.ROOMS_GUESTS;
+    dependencies.validation.onRoomsSelectChange();
+    capacitySelect.value = dependencies.data.Default.ROOMS_GUESTS;
+    descriptionTextarea.value = dependencies.data.Default.DESCRIPTION;
+    timeInSelect.value = dependencies.data.Default.TIME_IN_OUT;
+    timeOutSelect.value = dependencies.data.Default.TIME_IN_OUT;
     [].forEach.call(features, function (it) {
       it.checked = false;
     });
   }
 
-  function getLinkToMsg() {
-    var msgClass = (isSuccessSave) ? 'success' : 'error';
-    var msg = main.querySelector('.' + msgClass);
-    return msg;
-  }
-
-  function onEscKeyDown(evt) {
-    var msg = getLinkToMsg();
-    if (evt.keyCode === dependencies.data.ESC_KEYCODE) {
-      main.removeChild(msg);
-      window.removeEventListener('keydown', onEscKeyDown);
-      window.removeEventListener('click', onWindowClick);
-    }
-  }
-
-  function onWindowClick() {
-    var msg = getLinkToMsg();
-    main.removeChild(msg);
-    window.removeEventListener('click', onWindowClick);
-    window.removeEventListener('keydown', onEscKeyDown);
+  function makePageInactive() {
+    clean();
+    lock();
+    dependencies.mainPin.resetCoords();
+    dependencies.mainPin.fillCenterCoordsInAddress();
+    dependencies.map.clean();
+    mapBlock.classList.add(MAP_FADED_CLASS);
+    resetBtn.removeEventListener('click', onResetBtnClick);
+    adForm.removeEventListener('submit', onSubmit);
+    window.removeEventListener('resize', dependencies.map.updateLimits);
   }
 
   function onSuccess() {
-
-    function showSuccessMsg() {
-      var templateSuccess = document.getElementById('success').content.querySelector('.success');
-      var msg = templateSuccess.cloneNode(true);
-      window.addEventListener('keydown', onEscKeyDown);
-      window.addEventListener('click', onWindowClick);
-      main.appendChild(msg);
-    }
-
-    isSuccessSave = true;
-    clearFormData();
-    dependencies.mainPin.resetMainPinCoords();
-    dependencies.mainPin.fillPinCenterCoordsInAddress(mapPinMain);
-    dependencies.map.cleanMap();
-    lockForm();
-    mapBlock.classList.add('map--faded');
-    adForm.removeEventListener('load', onFormSubmit);
-    showSuccessMsg();
+    dependencies.message.isSuccessSave = true;
+    dependencies.message.addWindowListeners();
+    dependencies.message.showSuccess();
+    makePageInactive();
   }
 
   function onError(msgText) {
-    isSuccessSave = false;
-    var templateErr = document.getElementById('error').content.querySelector('.error');
-    var msg = templateErr.cloneNode(true);
-    var errMsg = msg.querySelector('.error__message');
-    var errbtn = msg.querySelector('.error__button');
-    errMsg.textContent = msgText;
-    window.addEventListener('keydown', onEscKeyDown);
-    window.addEventListener('click', onWindowClick);
-    errbtn.addEventListener('click', function () {
-      main.removeChild(msg);
-      window.removeEventListener('keydown', onEscKeyDown);
-      window.removeEventListener('click', onWindowClick);
-    });
-    main.appendChild(msg);
+    dependencies.message.isSuccessSave = false;
+    dependencies.message.addWindowListeners();
+    dependencies.message.showError(msgText, dependencies.message.removeWindowListeners);
   }
 
-  function onFormSubmit(evt) {
+  function unlock() {
+    dependencies.utils.removeAttributes(inputs, 'disabled');
+    dependencies.utils.removeAttributes(selects, 'disabled');
+    dependencies.utils.removeAttributes(checkboxes, 'disabled');
+    textarea.removeAttribute('disabled');
+    sumbitBtn.removeAttribute('disabled');
+    adForm.classList.remove(FORM_DISABLED_CLASS);
+    dependencies.filter.switchOn();
+  }
+
+  function onSubmit(evt) {
     evt.preventDefault();
-    dependencies.backend.save(new FormData(adForm), onSuccess, onError);
+    dependencies.backend.load(onSuccess, onError, 'POST', new FormData(adForm));
   }
 
   window.form = {
-    unlockForm: unlockForm,
-    onFormSubmit: onFormSubmit
+    unlock: unlock,
+    onSubmit: onSubmit,
+    onResetBtnClick: onResetBtnClick
   };
 })();

@@ -6,18 +6,22 @@
     map: window.map
   };
 
+  var ESC_KEYCODE = 27;
+  var FEATURE_CLASS = 'popup__feature';
+  var PHOTO_CLASS = 'popup__photo';
+  var PRICE_UNIT = ' ₽/ночь';
   var mapBlock = document.querySelector('.map');
   var mapPins = mapBlock.querySelector('.map__pins');
+  var templateCard = document.querySelector('#card').content.querySelector('.map__card');
 
-  function renderCard(apartment) {
+  function render(data, i) {
     var fragment = document.createDocumentFragment();
-    var card = createCard(apartment);
+    var card = create(data, i);
     fragment.appendChild(card);
     return fragment;
   }
 
-  function createCard(apartment) {
-    var templateCard = document.getElementById('card').content.querySelector('.map__card');
+  function create(data, i) {
     var card = templateCard.cloneNode(true);
     var avatar = card.querySelector('.popup__avatar');
     var title = card.querySelector('.popup__title');
@@ -32,47 +36,36 @@
     var closeBtn = card.querySelector('.popup__close');
     var featuresChildren = [].slice.call(features.children);
     var photosChildren = [].slice.call(photos.children);
+    var typeEng = data.offer.type.toUpperCase();
 
-    avatar.src = apartment.author.avatar;
-    title.textContent = apartment.offer.title;
-    address.textContent = apartment.offer.address;
-    price.textContent = apartment.offer.price + ' ₽/ночь';
-    switch (apartment.offer.type) {
-      case 'flat':
-        type.textContent = 'Квартира';
-        break;
-      case 'bungalo':
-        type.textContent = 'Бунгало';
-        break;
-      case 'house':
-        type.textContent = 'Дом';
-        break;
-      case 'palace':
-        type.textContent = 'Дворец';
-        break;
-    }
-    roomsAndGuests.textContent = apartment.offer.rooms + ' комнаты для ' + apartment.offer.guests + ' гостей';
-    checkInAndOut.textContent = 'Заезд после ' + apartment.offer.checkin + ', выезд до ' + apartment.offer.checkout;
+    avatar.src = data.author.avatar;
+    title.textContent = data.offer.title;
+    address.textContent = data.offer.address;
+    price.textContent = data.offer.price + PRICE_UNIT;
+    type.textContent = dependencies.data.Translation[typeEng];
+    roomsAndGuests.textContent = data.offer.rooms + ' комнаты для ' + data.offer.guests + ' гостей';
+    checkInAndOut.textContent = 'Заезд после ' + data.offer.checkin + ', выезд до ' + data.offer.checkout;
     featuresChildren.forEach(function (it) {
       features.removeChild(it);
     });
-    apartment.offer.features.forEach(function (it) {
+    data.offer.features.forEach(function (it) {
       var feature = document.createElement('li');
-      feature.classList.add('popup__feature', 'popup__feature--' + it);
+      feature.classList.add(FEATURE_CLASS, FEATURE_CLASS + '--' + it);
       features.appendChild(feature);
     });
-    description.textContent = apartment.offer.description;
+    description.textContent = data.offer.description;
     photosChildren.forEach(function (it) {
       photos.removeChild(it);
     });
-    apartment.offer.photos.forEach(function (it) {
+    data.offer.photos.forEach(function (it) {
       var photo = document.createElement('img');
-      photo.classList.add('popup__photo');
-      photo.width = 45;
-      photo.height = 40;
+      photo.classList.add(PHOTO_CLASS);
+      photo.width = dependencies.data.PhotoSize.WIDTH;
+      photo.height = dependencies.data.PhotoSize.HEIGHT;
       photo.src = it;
       photos.appendChild(photo);
     });
+    card.setAttribute('data-id', i);
     closeBtn.addEventListener('click', onCloseBtnClick);
     window.addEventListener('keydown', onEscKeyDown);
     return card;
@@ -80,35 +73,45 @@
 
   function onCloseBtnClick() {
     window.removeEventListener('keydown', onEscKeyDown);
-    closePopup();
+    close();
   }
 
   function onEscKeyDown(evt) {
-    if (evt.keyCode === dependencies.data.ESC_KEYCODE) {
+    if (evt.keyCode === ESC_KEYCODE) {
       window.removeEventListener('keydown', onEscKeyDown);
-      closePopup();
+      close();
     }
   }
 
-  function closePopup() {
+  function close() {
     var popup = mapPins.querySelector('.popup');
+    dependencies.map.removePinActiveClass();
     mapPins.removeChild(popup);
   }
 
-  function openPopup(title) {
-    dependencies.map.cleanCards();
-    var apartment = dependencies.data.OFFERS.filter(function (it) {
-      if (it.offer.title === title) {
-        return it;
-      }
-      return null;
-    })[0];
-    var renderedCard = renderCard(apartment);
-    mapPins.appendChild(renderedCard);
+  function isOpened(i) {
+    var card = mapPins.querySelector('.map__card');
+    if (card === null) {
+      return false;
+    }
+    var dataId = card.getAttribute('data-id');
+    if (+dataId === i) {
+      return true;
+    }
+    return false;
+  }
+
+  function open(i) {
+    if (isOpened(i)) {
+      return;
+    }
+    var data = dependencies.data.renderedOffers[i];
+    var popup = render(data, i);
+    dependencies.map.removeCard();
+    mapPins.appendChild(popup);
   }
 
   window.card = {
-    renderCard: renderCard,
-    openPopup: openPopup
+    open: open
   };
 })();

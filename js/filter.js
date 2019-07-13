@@ -7,24 +7,143 @@
     map: window.map
   };
 
-  var mapBlock = document.querySelector('.map');
-  var typeFilter = mapBlock.querySelector('#housing-type');
-  var mapPins = mapBlock.querySelector('.map__pins');
-
-  typeFilter.addEventListener('change', onTypeFilterChange);
-
-  function onTypeFilterChange() {
-    var typeFilteredOffers = dependencies.data.OFFERS;
-    if (typeFilter.value !== 'any') {
-      typeFilteredOffers = dependencies.data.OFFERS.filter(function (apartment) {
-        if (apartment.offer.type === typeFilter.value) {
-          return apartment;
-        }
-        return null;
-      });
+  var Price = {
+    LOW: {
+      FROM: 0,
+      TO: 10000
+    },
+    MIDDLE: {
+      FROM: 10000,
+      TO: 50000
+    },
+    HIGH: {
+      FROM: 50000,
+      TO: Infinity
     }
-    dependencies.map.cleanMap();
-    var renderedPins = dependencies.pin.renderPins(typeFilteredOffers);
+  };
+  var ANY_VALUE = 'any';
+  var mapFilters = document.querySelector('.map__filters');
+  var mapPins = document.querySelector('.map__pins');
+  var offers = [];
+  var Filter = {
+    'TYPE': checkType,
+    'PRICE': checkPrice,
+    'ROOMS': checkRooms,
+    'GUESTS': checkGuests,
+    'WIFI': checkFeature,
+    'DISHWASHER': checkFeature,
+    'PARKING': checkFeature,
+    'WASHER': checkFeature,
+    'ELEVATOR': checkFeature,
+    'CONDITIONER': checkFeature
+  };
+  var IdToKey = {
+    'housing-type': 'TYPE',
+    'housing-price': 'PRICE',
+    'housing-rooms': 'ROOMS',
+    'housing-guests': 'GUESTS',
+    'filter-wifi': 'WIFI',
+    'filter-dishwasher': 'DISHWASHER',
+    'filter-parking': 'PARKING',
+    'filter-washer': 'WASHER',
+    'filter-elevator': 'ELEVATOR',
+    'filter-conditioner': 'CONDITIONER'
+  };
+  var checksQueue = [];
+  var filterState = {};
+
+  function renderFilteredOffers(data) {
+    dependencies.map.clean();
+    var renderedPins = dependencies.pin.render(data);
     mapPins.appendChild(renderedPins);
   }
+
+  function filterOffers(callback, filterValue) {
+    var filteredOffers = offers;
+    if (filterValue !== ANY_VALUE) {
+      filteredOffers = offers.filter(function (it) {
+        return callback(it, filterValue);
+      });
+    }
+    offers = filteredOffers;
+    renderFilteredOffers(offers);
+  }
+
+  function checkIt(condition, it) {
+    if (condition) {
+      return it;
+    }
+    return null;
+  }
+
+  function checkPrice(it, filterValue) {
+    var lowerLimit = Price[filterValue.toUpperCase()].FROM;
+    var upperLimit = Price[filterValue.toUpperCase()].TO;
+    var condition = ((it.offer.price >= lowerLimit) && (it.offer.price <= upperLimit));
+    return checkIt(condition, it);
+  }
+
+  function checkType(it, filterValue) {
+    var condition = (it.offer.type === filterValue);
+    return checkIt(condition, it);
+  }
+
+  function checkRooms(it, filterValue) {
+    var condition = (it.offer.rooms === +filterValue);
+    return checkIt(condition, it);
+  }
+
+  function checkGuests(it, filterValue) {
+    var condition = (it.offer.guests === +filterValue);
+    return checkIt(condition, it);
+  }
+
+  function checkFeature(it, filterValue) {
+    var condition = it.offer.features.some(function (feature) {
+      return feature === filterValue;
+    });
+    return checkIt(condition, it);
+  }
+
+  function updateChecksQueue() {
+    for (var checkKey in filterState) {
+      if (filterState.propertyIsEnumerable(checkKey)) {
+        var checkValue = filterState[checkKey];
+        checksQueue.push({
+          key: checkKey,
+          value: checkValue
+        });
+      }
+    }
+  }
+
+  function onFiltersChange(evt) {
+    offers = dependencies.data.OFFERS;
+    var filter = evt.target;
+    var id = filter.id;
+    var key = IdToKey[id];
+    filterState[key] = filter.value;
+    if (filter.checked === false) {
+      filterState[key] = ANY_VALUE;
+    }
+    updateChecksQueue();
+    checksQueue.forEach(function (check) {
+      var callback = Filter[check.key];
+      filterOffers(callback, check.value);
+    });
+    checksQueue.length = 0;
+  }
+
+  function switchOn() {
+    mapFilters.addEventListener('change', onFiltersChange);
+  }
+
+  function switchOff() {
+    mapFilters.removeEventListener('change', onFiltersChange);
+  }
+
+  window.filter = {
+    switchOn: switchOn,
+    switchOff: switchOff
+  };
 })();

@@ -2,46 +2,46 @@
 
 (function () {
   var dependencies = {
-    data: window.data,
-    validation: window.validation
+    data: window.data
   };
 
-  var mapPinMain = document.querySelector('.map__pin--main');
+  var POSITION_UNIT = 'px';
+  var pinMain = document.querySelector('.map__pin--main');
   var addressInput = document.querySelector('#address');
 
-  function resetMainPinCoords() {
-    mapPinMain.style.top = dependencies.data.PIN_START_COORDS.x + 'px';
-    mapPinMain.style.left = dependencies.data.PIN_START_COORDS.y + 'px';
+  function resetCoords() {
+    pinMain.style.top = dependencies.data.PinStart.X + POSITION_UNIT;
+    pinMain.style.left = dependencies.data.PinStart.Y + POSITION_UNIT;
   }
 
-  function calculatePinCenterCoords(pinObj) {
+  function getPinCenterCoords() {
     var pinCenterCoords = {
-      x: Math.floor(pinObj.offsetLeft + pinObj.offsetWidth / 2),
-      y: Math.floor(pinObj.offsetTop + pinObj.offsetHeight / 2)
+      x: Math.floor(pinMain.offsetLeft + pinMain.offsetWidth / 2),
+      y: Math.floor(pinMain.offsetTop + pinMain.offsetHeight / 2)
     };
     return pinCenterCoords;
   }
 
-  function calculatePinCoords(pinObj) {
+  function getPinCoords() {
     var pinCoords = {
-      x: Math.floor(pinObj.offsetLeft + pinObj.offsetWidth / 2),
-      y: Math.floor(pinObj.offsetTop + pinObj.offsetHeight)
+      x: Math.floor(pinMain.offsetLeft + pinMain.offsetWidth / 2),
+      y: Math.floor(pinMain.offsetTop + pinMain.offsetHeight)
     };
     return pinCoords;
   }
 
-  function fillPinCenterCoordsInAddress(pinObj) {
-    var pinCenterCoords = calculatePinCenterCoords(pinObj);
+  function fillCenterCoordsInAddress() {
+    var pinCenterCoords = getPinCenterCoords();
     addressInput.value = pinCenterCoords.x + ', ' + pinCenterCoords.y;
   }
 
-  function fillPinCoordsInAddress(pinObj) {
-    var pinCoords = calculatePinCoords(pinObj);
+  function fillCoordsInAddress() {
+    var pinCoords = getPinCoords();
     addressInput.value = pinCoords.x + ', ' + pinCoords.y;
   }
   window.mainPin = {
-    fillPinCenterCoordsInAddress: fillPinCenterCoordsInAddress,
-    fillPinCoordsInAddress: fillPinCoordsInAddress,
-    resetMainPinCoords: resetMainPinCoords
+    fillCenterCoordsInAddress: fillCenterCoordsInAddress,
+    fillCoordsInAddress: fillCoordsInAddress,
+    resetCoords: resetCoords
   };
 })();
