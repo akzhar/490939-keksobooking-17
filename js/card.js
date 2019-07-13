@@ -9,20 +9,19 @@
   var ESC_KEYCODE = 27;
   var FEATURE_CLASS = 'popup__feature';
   var PHOTO_CLASS = 'popup__photo';
-  var ACTIVE_PIN_CLASS = 'map__pin--active';
   var PRICE_UNIT = ' ₽/ночь';
   var mapBlock = document.querySelector('.map');
   var mapPins = mapBlock.querySelector('.map__pins');
   var templateCard = document.querySelector('#card').content.querySelector('.map__card');
 
-  function render(data) {
+  function render(data, i) {
     var fragment = document.createDocumentFragment();
-    var card = create(data);
+    var card = create(data, i);
     fragment.appendChild(card);
     return fragment;
   }
 
-  function create(data) {
+  function create(data, i) {
     var card = templateCard.cloneNode(true);
     var avatar = card.querySelector('.popup__avatar');
     var title = card.querySelector('.popup__title');
@@ -66,6 +65,7 @@
       photo.src = it;
       photos.appendChild(photo);
     });
+    card.setAttribute('data-id', i);
     closeBtn.addEventListener('click', onCloseBtnClick);
     window.addEventListener('keydown', onEscKeyDown);
     return card;
@@ -85,15 +85,29 @@
 
   function close() {
     var popup = mapPins.querySelector('.popup');
-    var pin = mapPins.querySelector('.' + ACTIVE_PIN_CLASS);
-    pin.classList.remove(ACTIVE_PIN_CLASS);
+    dependencies.map.removePinActiveClass();
     mapPins.removeChild(popup);
   }
 
+  function isOpened(i) {
+    var card = mapPins.querySelector('.map__card');
+    if (card === null) {
+      return false;
+    }
+    var dataId = card.getAttribute('data-id');
+    if (+dataId === i) {
+      return true;
+    }
+    return false;
+  }
+
   function open(i) {
+    if (isOpened(i)) {
+      return;
+    }
     var data = dependencies.data.renderedOffers[i];
-    var popup = render(data);
-    dependencies.map.removeCards();
+    var popup = render(data, i);
+    dependencies.map.removeCard();
     mapPins.appendChild(popup);
   }
 

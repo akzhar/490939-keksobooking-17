@@ -24,11 +24,6 @@
   var ANY_VALUE = 'any';
   var mapFilters = document.querySelector('.map__filters');
   var mapPins = document.querySelector('.map__pins');
-  var typeFilter = mapFilters.querySelector('#housing-type');
-  var priceFilter = mapFilters.querySelector('#housing-price');
-  var roomsFilter = mapFilters.querySelector('#housing-rooms');
-  var guestsFilter = mapFilters.querySelector('#housing-guests');
-  var featuresFilters = mapFilters.querySelector('#housing-features');
   var offers = [];
   var Filter = {
     'TYPE': checkType,
@@ -41,7 +36,7 @@
     'WASHER': checkFeature,
     'ELEVATOR': checkFeature,
     'CONDITIONER': checkFeature
-  }
+  };
   var IdToKey = {
     'housing-type': 'TYPE',
     'housing-price': 'PRICE',
@@ -54,13 +49,12 @@
     'filter-elevator': 'ELEVATOR',
     'filter-conditioner': 'CONDITIONER'
   };
-  var Checks = ['TYPE', 'PRICE', 'ROOMS', 'GUESTS', 'WIFI', 'DISHWASHER', 'PARKING', 'WASHER', 'ELEVATOR', 'CONDITIONER'];
-  var ChecksQueue = [];
-  var FilterState = {};
+  var checksQueue = [];
+  var filterState = {};
 
-  function renderFilteredOffers(offers) {
+  function renderFilteredOffers(data) {
     dependencies.map.clean();
-    var renderedPins = dependencies.pin.render(offers);
+    var renderedPins = dependencies.pin.render(data);
     mapPins.appendChild(renderedPins);
   }
 
@@ -71,7 +65,6 @@
         return callback(it, filterValue);
       });
     }
-    // debugger;
     offers = filteredOffers;
     renderFilteredOffers(offers);
   }
@@ -83,15 +76,15 @@
     return null;
   }
 
-  function checkType(it, filterValue) {
-    var condition = (it.offer.type === filterValue);
-    return checkIt(condition, it);
-  }
-
   function checkPrice(it, filterValue) {
     var lowerLimit = Price[filterValue.toUpperCase()].FROM;
     var upperLimit = Price[filterValue.toUpperCase()].TO;
     var condition = ((it.offer.price >= lowerLimit) && (it.offer.price <= upperLimit));
+    return checkIt(condition, it);
+  }
+
+  function checkType(it, filterValue) {
+    var condition = (it.offer.type === filterValue);
     return checkIt(condition, it);
   }
 
@@ -112,37 +105,33 @@
     return checkIt(condition, it);
   }
 
-  function defineChecksQueue() {
-    Checks.forEach(function (check) {
-      if (FilterState.hasOwnProperty(check)) {
-        var checkObj = [];
-        checkObj[0] = check;
-        checkObj[1] = FilterState[check];
-        ChecksQueue.push(checkObj);
+  function updateChecksQueue() {
+    for (var checkKey in filterState) {
+      if (filterState.propertyIsEnumerable(checkKey)) {
+        var checkValue = filterState[checkKey];
+        checksQueue.push({
+          key: checkKey,
+          value: checkValue
+        });
       }
-    })
-    // debugger;
+    }
   }
 
   function onFiltersChange(evt) {
     offers = dependencies.data.OFFERS;
-    var id = evt.target.id;
-    var filter = mapFilters.querySelector('#' + id);
+    var filter = evt.target;
+    var id = filter.id;
     var key = IdToKey[id];
-    // debugger;
-    FilterState[key] = filter.value;
-    defineChecksQueue();
-
-    // фильтровать только изменившееся значение (условие)
-    for(var i = 0; i < ChecksQueue.length; i++) {
-      var filterKey = ChecksQueue[i][0];
-      var filterValue = ChecksQueue[i][1];
-      // debugger;
-      var callback = Filter[filterKey];
-      filterOffers(callback, filterValue);
+    filterState[key] = filter.value;
+    if (filter.checked === false) {
+      filterState[key] = ANY_VALUE;
     }
-    ChecksQueue.length = 0;
-    offers = dependencies.data.OFFERS;
+    updateChecksQueue();
+    checksQueue.forEach(function (check) {
+      var callback = Filter[check.key];
+      filterOffers(callback, check.value);
+    });
+    checksQueue.length = 0;
   }
 
   function switchOn() {
@@ -155,8 +144,6 @@
 
   window.filter = {
     switchOn: switchOn,
-    switchOff: switchOff,
-    FilterState: FilterState, // temp
-    ChecksQueue: ChecksQueue // temp
+    switchOff: switchOff
   };
 })();

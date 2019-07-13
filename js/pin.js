@@ -3,7 +3,8 @@
 (function () {
   var dependencies = {
     data: window.data,
-    card: window.card
+    card: window.card,
+    map: window.map
   };
 
   var POSITION_UNIT = 'px';
@@ -33,6 +34,7 @@
     pinImg.src = apartment.author.avatar;
     pinImg.alt = title;
     pin.addEventListener('click', function () {
+      dependencies.map.removePinActiveClass();
       pin.classList.add(ACTIVE_PIN_CLASS);
       dependencies.card.open(i);
     });
