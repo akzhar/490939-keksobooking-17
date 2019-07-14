@@ -9,7 +9,8 @@
     mainPin: window.mainPin,
     filter: window.filter,
     message: window.message,
-    validation: window.validation
+    validation: window.validation,
+    pin: window.pin
   };
 
   var FORM_DISABLED_CLASS = 'ad-form--disabled';
@@ -17,6 +18,7 @@
   var main = document.querySelector('main');
   var adForm = main.querySelector('.ad-form');
   var mapBlock = main.querySelector('.map');
+  var mapPins = mapBlock.querySelector('.map__pins');
   var inputs = adForm.querySelectorAll('input');
   var selects = document.querySelectorAll('select');
   var checkboxes = mapBlock.querySelectorAll('input[type="checkbox"]');
@@ -63,6 +65,27 @@
     });
   }
 
+  function addSelectEventListeners() {
+    typeSelect.addEventListener('change', dependencies.validation.onTypeSelectChange);
+    timeInSelect.addEventListener('change', dependencies.validation.onTimeSelectChange);
+    timeOutSelect.addEventListener('change', dependencies.validation.onTimeSelectChange);
+    roomsSelect.addEventListener('change', dependencies.validation.onRoomsSelectChange);
+  }
+
+  function makePageActive() {
+    if (!mapBlock.classList.contains(MAP_FADED_CLASS)) {
+      return;
+    }
+    var renderedPins = dependencies.pin.render(dependencies.data.OFFERS);
+    mapPins.appendChild(renderedPins);
+    addSelectEventListeners();
+    unlock();
+    mapBlock.classList.remove(MAP_FADED_CLASS);
+    resetBtn.addEventListener('click', onResetBtnClick);
+    adForm.addEventListener('submit', onSubmit);
+    window.addEventListener('resize', dependencies.map.updateLimits);
+  }
+
   function makePageInactive() {
     clean();
     lock();
@@ -106,6 +129,7 @@
   window.form = {
     unlock: unlock,
     onSubmit: onSubmit,
-    onResetBtnClick: onResetBtnClick
+    onResetBtnClick: onResetBtnClick,
+    makePageActive: makePageActive
   };
 })();
