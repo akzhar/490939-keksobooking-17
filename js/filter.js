@@ -2,6 +2,7 @@
 
 (function () {
   var dependencies = {
+    utils: window.utils,
     data: window.data,
     pin: window.pin,
     map: window.map
@@ -52,12 +53,6 @@
   var checksQueue = [];
   var filterState = {};
 
-  function renderFilteredOffers(data) {
-    dependencies.map.clean();
-    var renderedPins = dependencies.pin.render(data);
-    mapPins.appendChild(renderedPins);
-  }
-
   function filterOffers(callback, filterValue) {
     var filteredOffers = offers;
     if (filterValue !== ANY_VALUE) {
@@ -66,7 +61,6 @@
       });
     }
     offers = filteredOffers;
-    renderFilteredOffers(offers);
   }
 
   function checkIt(condition, it) {
@@ -117,6 +111,12 @@
     }
   }
 
+  function renderFilteredOffers() {
+    dependencies.map.clean();
+    var renderedPins = dependencies.pin.render(offers);
+    mapPins.appendChild(renderedPins);
+  }
+
   function onFiltersChange(evt) {
     offers = dependencies.data.OFFERS;
     var filter = evt.target;
@@ -132,6 +132,7 @@
       filterOffers(callback, check.value);
     });
     checksQueue.length = 0;
+    dependencies.utils.debounce(renderFilteredOffers)();
   }
 
   function switchOn() {
