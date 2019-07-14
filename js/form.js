@@ -72,6 +72,13 @@
     roomsSelect.addEventListener('change', dependencies.validation.onRoomsSelectChange);
   }
 
+  function removeSelectEventListeners() {
+    typeSelect.removeEventListener('change', dependencies.validation.onTypeSelectChange);
+    timeInSelect.removeEventListener('change', dependencies.validation.onTimeSelectChange);
+    timeOutSelect.removeEventListener('change', dependencies.validation.onTimeSelectChange);
+    roomsSelect.removeEventListener('change', dependencies.validation.onRoomsSelectChange);
+  }
+
   function makePageActive() {
     if (!mapBlock.classList.contains(MAP_FADED_CLASS)) {
       return;
@@ -88,10 +95,11 @@
 
   function makePageInactive() {
     clean();
-    lock();
+    dependencies.map.clean();
     dependencies.mainPin.resetCoords();
     dependencies.mainPin.fillCenterCoordsInAddress();
-    dependencies.map.clean();
+    removeSelectEventListeners();
+    lock();
     mapBlock.classList.add(MAP_FADED_CLASS);
     resetBtn.removeEventListener('click', onResetBtnClick);
     adForm.removeEventListener('submit', onSubmit);

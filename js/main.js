@@ -10,4 +10,5 @@
 
   dependencies.mainPin.fillCenterCoordsInAddress(mainPin);
   mainPin.addEventListener('mousedown', dependencies.dnd.onMainPinMouseDown);
+  mainPin.addEventListener('keydown', dependencies.dnd.onMainPinEnterKeyDown);
 })();

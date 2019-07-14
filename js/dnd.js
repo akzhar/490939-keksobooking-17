@@ -7,6 +7,7 @@
     mainPin: window.mainPin,
   };
 
+  var ENTER_KEYCODE = 13;
   var POSITION_UNIT = 'px';
   var mapBlock = document.querySelector('.map');
   var mainPin = mapBlock.querySelector('.map__pin--main');
@@ -50,6 +51,13 @@
     mainPin.removeEventListener('mouseup', onMainPinMouseUp);
   }
 
+  function onMainPinEnterKeyDown(evt) {
+    if (evt.keyCode === ENTER_KEYCODE) {
+      dependencies.form.makePageActive();
+      mainPin.removeEventListener('keydown', onMainPinEnterKeyDown);
+    }
+  }
+
   function onMainPinMouseDown(evtMouseDown) {
     if (!dependencies.data.OFFERS) {
       return;
@@ -63,6 +71,6 @@
 
   window.dnd = {
     onMainPinMouseDown: onMainPinMouseDown,
-    onMainPinMouseUp: onMainPinMouseUp
+    onMainPinEnterKeyDown: onMainPinEnterKeyDown
   };
 })();
