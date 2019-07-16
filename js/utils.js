@@ -38,11 +38,45 @@
     };
   }
 
+  function cleanBlocksChildren(block) {
+    var children = [].slice.call(block.children);
+
+    children.forEach(function (it) {
+      block.removeChild(it);
+    });
+  }
+
+  function defineRoomWord(roomsCount) {
+    var roomWord = 'комнат';
+    var string = roomsCount.toString();
+    var lastSymbol = string[string.length - 1];
+    if (lastSymbol === '1') {
+      roomWord = 'комната';
+    }
+    if (lastSymbol === '2' || lastSymbol === '3' || lastSymbol === '4') {
+      roomWord = 'комнаты';
+    }
+    return roomWord;
+  }
+
+  function defineGuestWord(guestsCount) {
+    var guestWord = 'гостей';
+    var string = guestsCount.toString();
+    var lastSymbol = string[string.length - 1];
+    if (lastSymbol === '1') {
+      guestWord = 'гостя';
+    }
+    return guestWord;
+  }
+
   window.utils = {
     getRandomNumber: getRandomNumber,
     getRandomKeyInObject: getRandomKeyInObject,
     removeAttributes: removeAttributes,
     addAttributes: addAttributes,
-    debounce: debounce
+    debounce: debounce,
+    cleanBlocksChildren: cleanBlocksChildren,
+    defineRoomWord: defineRoomWord,
+    defineGuestWord: defineGuestWord
   };
 })();
