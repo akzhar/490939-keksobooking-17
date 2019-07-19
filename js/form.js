@@ -37,6 +37,8 @@
   var resetBtn = adForm.querySelector('.ad-form__reset');
   var avatarInput = document.querySelector('#avatar');
   var photoInput = document.querySelector('#images');
+  var avatarContainer = document.querySelector('.ad-form-header__preview > img');
+  var photosContainer = document.querySelector('.ad-form__photo-container');
 
   function onResetBtnClick(evt) {
     evt.preventDefault();
@@ -66,6 +68,14 @@
     [].forEach.call(features, function (it) {
       it.checked = false;
     });
+    avatarContainer.src = dependencies.data.DEFAULT_MUFFIN_IMG_PATH;
+    var imgs = photosContainer.querySelectorAll('.ad-form__photo');
+    [].forEach.call(imgs, function (it) {
+      photosContainer.removeChild(it);
+    });
+    var blank = document.createElement('div');
+    blank.classList.add(dependencies.data.PHOTO_BLANK_CLASS);
+    photosContainer.appendChild(blank);
   }
 
   function addSelectEventListeners() {

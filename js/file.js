@@ -1,65 +1,38 @@
 'use strict';
 
 (function () {
+  var dependencies = {
+    data: window.data
+  };
 
   var avatarInput = document.querySelector('#avatar');
   var avatarContainer = document.querySelector('.ad-form-header__preview > img');
   var photoInput = document.querySelector('#images');
   var photosContainer = document.querySelector('.ad-form__photo-container');
-
-  var ImgStyle = {
-    OPACITY_ON: '0.4',
-    OPACITY_OFF: '1.0',
-    OUTLINE_ON: '1px solid #ffaa99',
-    OUTLINE_OFF: 'none'
-  };
-
-  var ImgSize = {
-    WIDTH: '70px',
-    HEIGHT: '70px'
-  };
   var dragSourceEl = null;
 
-  var validImgTypes = ['image/png', 'image/jpg', 'image/jpeg'];
-
-  function onAvatarInputChange() {
-    var fReader = new FileReader();
-    fReader.readAsDataURL(avatarInput.files[0]);
-    fReader.addEventListener('load', renderAvatar);
-  }
-
-  function renderAvatar(evt) {
-    avatarContainer.src = evt.target.result;
-  }
-
-  function onPhotoInputChange() {
-    var photoFiles = photoInput.files;
-    for (var file in photoFiles) {
-      if (photoFiles.hasOwnProperty(file)) {
-        readFile(photoFiles[file]);
-      }
+  function doIfFileTypeIsValid(file, callback) {
+    if (dependencies.data.VALID_IMG_TYPES.includes(file.type)) {
+      doAfterReadFile(file, callback);
     }
   }
 
-  function removeBlank() {
-    var blank = photosContainer.querySelector('.ad-form__photo');
+  function doAfterReadFile(file, callback) {
+    var fReader = new FileReader();
+    fReader.readAsDataURL(file);
+    fReader.addEventListener('load', callback);
+  }
+
+  function removeEmptyBlank() {
+    var blank = photosContainer.querySelector('.' + dependencies.data.PHOTO_BLANK_CLASS);
     if (blank !== null && blank.childElementCount === 0) {
       photosContainer.removeChild(blank);
     }
   }
 
-  function readFile(file) {
-    if (validImgTypes.includes(file.type)) {
-      var fReader = new FileReader();
-      fReader.readAsDataURL(file);
-      fReader.addEventListener('load', renderPhoto);
-      removeBlank();
-    }
-  }
-
   function createPhoto(evt) {
-    var div = document.createElement('div');
-    div.classList.add('ad-form__photo');
+    var photo = document.createElement('div');
+    photo.classList.add(dependencies.data.PHOTO_BLANK_CLASS);
     var img = document.createElement('img');
     img.setAttribute('draggable', true);
     img.addEventListener('dragstart', onImgDragStart);
@@ -69,28 +42,23 @@
     img.addEventListener('drop', onImgDrop);
     img.addEventListener('dragend', onImgDragEnd);
     img.style.cursor = 'move';
-    img.style.width = ImgSize.WIDTH;
-    img.style.height = ImgSize.HEIGHT;
+    img.style.width = dependencies.data.ImgSize.WIDTH + 'px';
+    img.style.height = dependencies.data.ImgSize.HEIGHT + 'px';
     img.src = evt.target.result;
-    div.appendChild(img);
-    return div;
-  }
-
-  function renderPhoto(evt) {
-    var photo = createPhoto(evt);
-    photosContainer.appendChild(photo);
+    photo.appendChild(img);
+    return photo;
   }
 
   function onImgDragStart(evt) {
     dragSourceEl = evt.target;
     evt.dataTransfer.effectAllowed = 'move';
-    dragSourceEl.style.opacity = ImgStyle.OPACITY_ON;
+    dragSourceEl.style.opacity = dependencies.data.ImgStyle.OPACITY_ON;
     evt.dataTransfer.setData('src', dragSourceEl.src);
   }
 
   function onImgDragEnter(evt) {
     if (dragSourceEl !== evt.target) {
-      evt.target.style.outline = ImgStyle.OUTLINE_ON;
+      evt.target.style.outline = dependencies.data.ImgStyle.OUTLINE_ON;
     }
     evt.preventDefault();
   }
@@ -100,11 +68,7 @@
   }
 
   function onImgDragLeave(evt) {
-    evt.target.style.outline = ImgStyle.OUTLINE_OFF;
-  }
-
-  function onImgDragEnd(evt) {
-    evt.target.style.opacity = ImgStyle.OPACITY_OFF;
+    evt.target.style.outline = dependencies.data.ImgStyle.OUTLINE_OFF;
   }
 
   function onImgDrop(evt) {
@@ -116,12 +80,40 @@
     }
   }
 
+  function onImgDragEnd(evt) {
+    evt.target.style.opacity = dependencies.data.ImgStyle.OPACITY_OFF;
+  }
+
   function removeImgStyles() {
     var imgs = photosContainer.querySelectorAll('.ad-form__photo');
     [].forEach.call(imgs, function (it) {
-      it.children[0].style.opacity = ImgStyle.OPACITY_OFF;
-      it.children[0].style.outline = ImgStyle.OUTLINE_OFF;
+      it.children[0].style.opacity = dependencies.data.ImgStyle.OPACITY_OFF;
+      it.children[0].style.outline = dependencies.data.ImgStyle.OUTLINE_OFF;
     });
+  }
+
+  function renderAvatar(evt) {
+    avatarContainer.src = evt.target.result;
+  }
+
+  function renderPhoto(evt) {
+    var photo = createPhoto(evt);
+    removeEmptyBlank();
+    photosContainer.appendChild(photo);
+  }
+
+  function onAvatarInputChange() {
+    var file = avatarInput.files[0];
+    doIfFileTypeIsValid(file, renderAvatar);
+  }
+
+  function onPhotoInputChange() {
+    var files = photoInput.files;
+    for (var file in files) {
+      if (files.hasOwnProperty(file)) {
+        doIfFileTypeIsValid(files[file], renderPhoto);
+      }
+    }
   }
 
   window.file = {

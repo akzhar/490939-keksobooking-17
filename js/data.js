@@ -62,6 +62,24 @@
     PhotoSize: {
       WIDTH: 45,
       HEIGHT: 40
-    }
+    },
+    DEFAULT_MUFFIN_IMG_PATH: 'img/muffin-grey.svg',
+    ImgSize: {
+      WIDTH: 70,
+      HEIGHT: 70
+    },
+    ImgStyle: {
+      OPACITY_ON: '0.4',
+      OPACITY_OFF: '1.0',
+      OUTLINE_ON: '2px solid #ffaa99',
+      OUTLINE_OFF: 'none'
+    },
+    VALID_IMG_TYPES: [
+      'image/png',
+      'image/jpg',
+      'image/jpeg',
+      'image/svg'
+    ],
+    PHOTO_BLANK_CLASS: 'ad-form__photo'
   };
 })();
