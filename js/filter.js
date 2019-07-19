@@ -114,7 +114,7 @@
       filterState[key] = ANY_VALUE;
     }
     for (var filterKey in filterState) {
-      if (filterState.propertyIsEnumerable(filterKey)) {
+      if (filterState.hasOwnProperty(filterKey)) {
         var callback = Filter[filterKey];
         var filterValue = filterState[filterKey];
         filterData(callback, filterValue);

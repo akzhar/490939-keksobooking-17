@@ -10,7 +10,8 @@
     filter: window.filter,
     message: window.message,
     validation: window.validation,
-    pin: window.pin
+    pin: window.pin,
+    file: window.file
   };
 
   var FORM_DISABLED_CLASS = 'ad-form--disabled';
@@ -34,6 +35,8 @@
   var capacitySelect = adForm.querySelector('#capacity');
   var features = adForm.querySelectorAll('input[name="features"]');
   var resetBtn = adForm.querySelector('.ad-form__reset');
+  var avatarInput = document.querySelector('#avatar');
+  var photoInput = document.querySelector('#images');
 
   function onResetBtnClick(evt) {
     evt.preventDefault();
@@ -88,6 +91,8 @@
     addSelectEventListeners();
     unlock();
     mapBlock.classList.remove(MAP_FADED_CLASS);
+    avatarInput.addEventListener('change', dependencies.file.onAvatarInputChange);
+    photoInput.addEventListener('change', dependencies.file.onPhotoInputChange);
     resetBtn.addEventListener('click', onResetBtnClick);
     adForm.addEventListener('submit', onSubmit);
     window.addEventListener('resize', dependencies.map.updateLimits);
@@ -101,6 +106,8 @@
     removeSelectEventListeners();
     lock();
     mapBlock.classList.add(MAP_FADED_CLASS);
+    avatarInput.removeEventListener('change', dependencies.file.onAvatarInputChange);
+    photoInput.removeEventListener('change', dependencies.file.onPhotoInputChange);
     resetBtn.removeEventListener('click', onResetBtnClick);
     adForm.removeEventListener('submit', onSubmit);
     window.removeEventListener('resize', dependencies.map.updateLimits);
