@@ -14,8 +14,6 @@
     file: window.file
   };
 
-  var FORM_DISABLED_CLASS = 'ad-form--disabled';
-  var MAP_FADED_CLASS = 'map--faded';
   var main = document.querySelector('main');
   var adForm = main.querySelector('.ad-form');
   var mapBlock = main.querySelector('.map');
@@ -53,24 +51,24 @@
     dependencies.utils.addAttributes(checkboxes, 'disabled', true);
     textarea.setAttribute('disabled', true);
     sumbitBtn.setAttribute('disabled', true);
-    adForm.classList.add(FORM_DISABLED_CLASS);
+    adForm.classList.add(dependencies.data.FORM_DISABLED_CLASS);
     dependencies.filter.switchOff();
   }
 
   function clean() {
-    titleInput.value = dependencies.data.Default.TITLE;
-    typeSelect.value = dependencies.data.Default.TYPE;
-    priceInput.value = dependencies.data.Default.PRICE;
-    roomsSelect.value = dependencies.data.Default.ROOMS_GUESTS;
+    titleInput.value = dependencies.data.DefaultValue.TITLE;
+    typeSelect.value = dependencies.data.DefaultValue.TYPE;
+    priceInput.value = dependencies.data.DefaultValue.PRICE;
+    roomsSelect.value = dependencies.data.DefaultValue.ROOMS_GUESTS;
     dependencies.validation.onRoomsSelectChange();
-    capacitySelect.value = dependencies.data.Default.ROOMS_GUESTS;
-    descriptionTextarea.value = dependencies.data.Default.DESCRIPTION;
-    timeInSelect.value = dependencies.data.Default.TIME_IN_OUT;
-    timeOutSelect.value = dependencies.data.Default.TIME_IN_OUT;
+    capacitySelect.value = dependencies.data.DefaultValue.ROOMS_GUESTS;
+    descriptionTextarea.value = dependencies.data.DefaultValue.DESCRIPTION;
+    timeInSelect.value = dependencies.data.DefaultValue.TIME_IN_OUT;
+    timeOutSelect.value = dependencies.data.DefaultValue.TIME_IN_OUT;
     [].forEach.call(features, function (it) {
       it.checked = false;
     });
-    avatarContainer.src = dependencies.data.DEFAULT_MUFFIN_IMG_PATH;
+    avatarContainer.src = dependencies.data.MUFFIN_IMG_PATH;
     var imgs = photosContainer.querySelectorAll('.ad-form__photo');
     [].forEach.call(imgs, function (it) {
       photosContainer.removeChild(it);
@@ -82,30 +80,30 @@
 
   function addSelectEventListeners() {
     typeSelect.addEventListener('change', dependencies.validation.onTypeSelectChange);
-    timeInSelect.addEventListener('change', dependencies.validation.onTimeSelectChange);
-    timeOutSelect.addEventListener('change', dependencies.validation.onTimeSelectChange);
+    timeInSelect.addEventListener('change', dependencies.validation.onTimeInSelectChange);
+    timeOutSelect.addEventListener('change', dependencies.validation.onTimeOutSelectChange);
     roomsSelect.addEventListener('change', dependencies.validation.onRoomsSelectChange);
   }
 
   function removeSelectEventListeners() {
     typeSelect.removeEventListener('change', dependencies.validation.onTypeSelectChange);
-    timeInSelect.removeEventListener('change', dependencies.validation.onTimeSelectChange);
-    timeOutSelect.removeEventListener('change', dependencies.validation.onTimeSelectChange);
+    timeInSelect.removeEventListener('change', dependencies.validation.onTimeInSelectChange);
+    timeOutSelect.removeEventListener('change', dependencies.validation.onTimeOutSelectChange);
     roomsSelect.removeEventListener('change', dependencies.validation.onRoomsSelectChange);
   }
 
   function makePageActive() {
-    if (!mapBlock.classList.contains(MAP_FADED_CLASS)) {
+    if (!mapBlock.classList.contains(dependencies.data.MAP_FADED_CLASS)) {
       return;
     }
     var renderedPins = dependencies.pin.render(dependencies.data.OFFERS);
     mapPins.appendChild(renderedPins);
     addSelectEventListeners();
     unlock();
-    mapBlock.classList.remove(MAP_FADED_CLASS);
-    avatarDropZone.addEventListener('dragover', dependencies.file.onDropZoneDragOver);
+    mapBlock.classList.remove(dependencies.data.MAP_FADED_CLASS);
+    avatarDropZone.addEventListener('dragover', dependencies.file.onAvatarDropZoneDragOver);
     avatarDropZone.addEventListener('drop', dependencies.file.onAvatarDropZoneDrop);
-    photoDropZone.addEventListener('dragover', dependencies.file.onDropZoneDragOver);
+    photoDropZone.addEventListener('dragover', dependencies.file.onPhotoDropZoneDragOver);
     photoDropZone.addEventListener('drop', dependencies.file.onPhotoDropZoneDrop);
     avatarInput.addEventListener('change', dependencies.file.onAvatarInputChange);
     photoInput.addEventListener('change', dependencies.file.onPhotoInputChange);
@@ -121,10 +119,10 @@
     dependencies.mainPin.fillCenterCoordsInAddress();
     removeSelectEventListeners();
     lock();
-    mapBlock.classList.add(MAP_FADED_CLASS);
-    avatarDropZone.removeEventListener('dragover', dependencies.file.onDropZoneDragOver);
+    mapBlock.classList.add(dependencies.data.MAP_FADED_CLASS);
+    avatarDropZone.removeEventListener('dragover', dependencies.file.onAvatarDropZoneDragOver);
     avatarDropZone.removeEventListener('drop', dependencies.file.onAvatarDropZoneDrop);
-    photoDropZone.removeEventListener('dragover', dependencies.file.onDropZoneDragOver);
+    photoDropZone.removeEventListener('dragover', dependencies.file.onPhotoDropZoneDragOver);
     photoDropZone.removeEventListener('drop', dependencies.file.onPhotoDropZoneDrop);
     avatarInput.removeEventListener('change', dependencies.file.onAvatarInputChange);
     photoInput.removeEventListener('change', dependencies.file.onPhotoInputChange);
@@ -152,7 +150,7 @@
     dependencies.utils.removeAttributes(checkboxes, 'disabled');
     textarea.removeAttribute('disabled');
     sumbitBtn.removeAttribute('disabled');
-    adForm.classList.remove(FORM_DISABLED_CLASS);
+    adForm.classList.remove(dependencies.data.FORM_DISABLED_CLASS);
     dependencies.filter.switchOn();
   }
 

@@ -9,16 +9,14 @@
   var MS_PER_SECOND = 1000;
   var JSON_TYPE = 'json';
   var TIME_UNIT = ' c';
-  var Status = {
-    OK: 200
-  };
+  var OK_STATUS = 200;
 
   function load(onLoad, onError, method, data) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = JSON_TYPE;
     xhr.timeout = MAX_RESPONSE_TIME;
     xhr.addEventListener('load', function () {
-      if (xhr.status === Status.OK) {
+      if (xhr.status === OK_STATUS) {
         onLoad(xhr.response);
       } else {
         onError('Cтатус ответа: ' + xhr.status + ' ' + xhr.statusText);
