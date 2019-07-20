@@ -7,10 +7,6 @@
     map: window.map
   };
 
-  var ESC_KEYCODE = 27;
-  var FEATURE_CLASS = 'popup__feature';
-  var PHOTO_CLASS = 'popup__photo';
-  var PRICE_UNIT = ' ₽/ночь';
   var mapBlock = document.querySelector('.map');
   var mapPins = mapBlock.querySelector('.map__pins');
   var templateCard = document.querySelector('#card').content.querySelector('.map__card');
@@ -39,7 +35,7 @@
 
   function createPhoto(it, parentBlock) {
     var photo = document.createElement('img');
-    photo.classList.add(PHOTO_CLASS);
+    photo.classList.add(dependencies.data.PHOTO_CLASS);
     photo.width = dependencies.data.PhotoSize.WIDTH;
     photo.height = dependencies.data.PhotoSize.HEIGHT;
     photo.src = it;
@@ -48,7 +44,7 @@
 
   function createFeature(it, parentBlock) {
     var feature = document.createElement('li');
-    feature.classList.add(FEATURE_CLASS, FEATURE_CLASS + '--' + it);
+    feature.classList.add(dependencies.data.FEATURE_CLASS, dependencies.data.FEATURE_CLASS + '--' + it);
     parentBlock.appendChild(feature);
   }
 
@@ -66,59 +62,59 @@
     var photosBlock = card.querySelector('.popup__photos');
     var closeBtn = card.querySelector('.popup__close');
     var Data = {
-      avatar: returnDataIfExists(apartment.author.avatar),
-      title: returnDataIfExists(apartment.offer.title),
-      address: returnDataIfExists(apartment.offer.address),
-      price: returnDataIfExists(apartment.offer.price),
-      type: returnDataIfExists(apartment.offer.type),
-      rooms: returnDataIfExists(apartment.offer.rooms),
-      guests: returnDataIfExists(apartment.offer.guests),
-      checkIn: returnDataIfExists(apartment.offer.checkin),
-      checkOut: returnDataIfExists(apartment.offer.checkout),
-      features: apartment.offer.features,
-      description: returnDataIfExists(apartment.offer.description),
-      photos: apartment.offer.photos,
-      roomsAndGuests: undefined,
-      checkInAndOut: undefined
+      AVATAR: returnDataIfExists(apartment.author.avatar),
+      TITLE: returnDataIfExists(apartment.offer.title),
+      ADDRESS: returnDataIfExists(apartment.offer.address),
+      PRICE: returnDataIfExists(apartment.offer.price),
+      TYPE: returnDataIfExists(apartment.offer.type),
+      ROOMS: returnDataIfExists(apartment.offer.rooms),
+      GUESTS: returnDataIfExists(apartment.offer.guests),
+      CHECK_IN: returnDataIfExists(apartment.offer.checkin),
+      CHECK_OUT: returnDataIfExists(apartment.offer.checkout),
+      FEATURES: apartment.offer.features,
+      DESCRIPTION: returnDataIfExists(apartment.offer.description),
+      PHOTOS: apartment.offer.photos,
+      ROOMS_AND_GUESTS: undefined,
+      CHECK_IN_AND_OUT: undefined
     };
 
     dependencies.utils.cleanBlocksChildren(featuresBlock);
     dependencies.utils.cleanBlocksChildren(photosBlock);
-    if (Data.price !== undefined) {
-      Data.price = Data.price + PRICE_UNIT;
+    if (Data.PRICE !== undefined) {
+      Data.PRICE = Data.PRICE + dependencies.data.PRICE_UNIT;
     }
-    if (Data.type !== undefined) {
-      Data.type = dependencies.data.Translation[Data.type.toUpperCase()];
+    if (Data.TYPE !== undefined) {
+      Data.TYPE = dependencies.data.Translation[Data.TYPE.toUpperCase()];
     }
-    if (Data.rooms !== undefined && Data.guests !== undefined) {
-      var roomsWord = dependencies.utils.defineRoomWord(Data.rooms);
-      var guestWord = dependencies.utils.defineGuestWord(Data.guests);
-      Data.roomsAndGuests = Data.rooms + ' ' + roomsWord + ' для ' + Data.guests + ' ' + guestWord;
+    if (Data.ROOMS !== undefined && Data.GUESTS !== undefined) {
+      var roomsWord = dependencies.utils.defineRoomWord(Data.ROOMS);
+      var guestWord = dependencies.utils.defineGuestWord(Data.GUESTS);
+      Data.ROOMS_AND_GUESTS = Data.ROOMS + ' ' + roomsWord + ' для ' + Data.GUESTS + ' ' + guestWord;
     }
-    if (Data.checkIn !== undefined && Data.checkOut !== undefined) {
-      Data.heckInOut = 'Заезд после ' + apartment.offer.checkin + ', выезд до ' + apartment.offer.checkout;
+    if (Data.CHECK_IN !== undefined && Data.CHECK_OUT !== undefined) {
+      Data.CHECK_IN_AND_OUT = 'Заезд после ' + apartment.offer.checkin + ', выезд до ' + apartment.offer.checkout;
     }
-    if (Data.avatar !== undefined) {
-      avatarBlock.src = Data.avatar;
+    if (Data.AVATAR !== undefined) {
+      avatarBlock.src = Data.AVATAR;
     } else {
       card.removeChild(avatarBlock);
     }
-    renderBlockIfDataExists(card, Data.title, titleBlock);
-    renderBlockIfDataExists(card, Data.address, addressBlock);
-    renderBlockIfDataExists(card, Data.price, priceBlock);
-    renderBlockIfDataExists(card, Data.type, typeBlock);
-    renderBlockIfDataExists(card, Data.roomsAndGuests, roomsAndGuestsBlock);
-    renderBlockIfDataExists(card, Data.checkInAndOut, checkInAndOutBlock);
-    renderBlockIfDataExists(card, Data.description, descriptionBlock);
-    if (Data.features.length !== 0) {
-      Data.features.forEach(function (it) {
+    renderBlockIfDataExists(card, Data.TITLE, titleBlock);
+    renderBlockIfDataExists(card, Data.ADDRESS, addressBlock);
+    renderBlockIfDataExists(card, Data.PRICE, priceBlock);
+    renderBlockIfDataExists(card, Data.TYPE, typeBlock);
+    renderBlockIfDataExists(card, Data.ROOMS_AND_GUESTS, roomsAndGuestsBlock);
+    renderBlockIfDataExists(card, Data.CHECK_IN_AND_OUT, checkInAndOutBlock);
+    renderBlockIfDataExists(card, Data.DESCRIPTION, descriptionBlock);
+    if (Data.FEATURES.length !== 0) {
+      Data.FEATURES.forEach(function (it) {
         createFeature(it, featuresBlock);
       });
     } else {
       card.removeChild(featuresBlock);
     }
-    if (Data.photos.length !== 0) {
-      Data.photos.forEach(function (it) {
+    if (Data.PHOTOS.length !== 0) {
+      Data.PHOTOS.forEach(function (it) {
         createPhoto(it, photosBlock);
       });
     } else {
@@ -136,7 +132,7 @@
   }
 
   function onEscKeyDown(evt) {
-    if (evt.keyCode === ESC_KEYCODE) {
+    if (evt.keyCode === dependencies.data.ESC_KEYCODE) {
       window.removeEventListener('keydown', onEscKeyDown);
       closeCard();
     }

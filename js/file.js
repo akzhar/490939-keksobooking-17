@@ -11,6 +11,21 @@
   var photosContainer = document.querySelector('.ad-form__photo-container');
   var dragSourceEl = null;
 
+  function removeEmptyBlank() {
+    var blank = photosContainer.querySelector('.' + dependencies.data.PHOTO_BLANK_CLASS);
+    if (blank !== null && blank.childElementCount === 0) {
+      photosContainer.removeChild(blank);
+    }
+  }
+
+  function removeImgStyles() {
+    var imgs = photosContainer.querySelectorAll('.ad-form__photo');
+    [].forEach.call(imgs, function (it) {
+      it.children[0].style.opacity = dependencies.data.ImgStyle.OPACITY_OFF;
+      it.children[0].style.outline = dependencies.data.ImgStyle.OUTLINE_OFF;
+    });
+  }
+
   function doIfFileIsValid(file, callback) {
     if (dependencies.data.VALID_IMG_TYPES.includes(file.type)) {
       doAfterReadFile(file, callback);
@@ -29,13 +44,6 @@
     var fReader = new FileReader();
     fReader.readAsDataURL(file);
     fReader.addEventListener('load', callback);
-  }
-
-  function removeEmptyBlank() {
-    var blank = photosContainer.querySelector('.' + dependencies.data.PHOTO_BLANK_CLASS);
-    if (blank !== null && blank.childElementCount === 0) {
-      photosContainer.removeChild(blank);
-    }
   }
 
   function createPhoto(evt) {
@@ -92,14 +100,6 @@
     evt.target.style.opacity = dependencies.data.ImgStyle.OPACITY_OFF;
   }
 
-  function removeImgStyles() {
-    var imgs = photosContainer.querySelectorAll('.ad-form__photo');
-    [].forEach.call(imgs, function (it) {
-      it.children[0].style.opacity = dependencies.data.ImgStyle.OPACITY_OFF;
-      it.children[0].style.outline = dependencies.data.ImgStyle.OUTLINE_OFF;
-    });
-  }
-
   function renderAvatar(evt) {
     avatarContainer.src = evt.target.result;
   }
@@ -120,7 +120,12 @@
     renderPhotosIfFilesIsValid(files);
   }
 
-  function onDropZoneDragOver(evt) {
+  function onAvatarDropZoneDragOver(evt) {
+    evt.preventDefault();
+    evt.dataTransfer.dropEffect = 'copy';
+  }
+
+  function onPhotoDropZoneDragOver(evt) {
     evt.preventDefault();
     evt.dataTransfer.dropEffect = 'copy';
   }
@@ -140,7 +145,8 @@
   window.file = {
     onAvatarInputChange: onAvatarInputChange,
     onPhotoInputChange: onPhotoInputChange,
-    onDropZoneDragOver: onDropZoneDragOver,
+    onAvatarDropZoneDragOver: onAvatarDropZoneDragOver,
+    onPhotoDropZoneDragOver: onPhotoDropZoneDragOver,
     onAvatarDropZoneDrop: onAvatarDropZoneDrop,
     onPhotoDropZoneDrop: onPhotoDropZoneDrop
   };

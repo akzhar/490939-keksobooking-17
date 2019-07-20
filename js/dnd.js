@@ -7,16 +7,14 @@
     mainPin: window.mainPin,
   };
 
-  var ENTER_KEYCODE = 13;
-  var POSITION_UNIT = 'px';
   var mapBlock = document.querySelector('.map');
   var mainPin = mapBlock.querySelector('.map__pin--main');
-  var currentCoords = {};
+  var currentCoordinates = {};
 
   function onDocumentMouseMove(evtMove) {
     var shift = {
-      x: currentCoords.x - evtMove.clientX,
-      y: currentCoords.y - evtMove.clientY
+      x: currentCoordinates.x - evtMove.clientX,
+      y: currentCoordinates.y - evtMove.clientY
     };
     var pinMainTop = mainPin.offsetTop - shift.y;
     var pinMainLeft = mainPin.offsetLeft - shift.x;
@@ -34,10 +32,10 @@
     if (pinMainLeft > (dependencies.data.MapLimit.X_MAX - pinWidth / 2)) {
       pinMainLeft = dependencies.data.MapLimit.X_MAX - pinWidth / 2;
     }
-    currentCoords.x = evtMove.clientX;
-    currentCoords.y = evtMove.clientY;
-    mainPin.style.top = pinMainTop + POSITION_UNIT;
-    mainPin.style.left = pinMainLeft + POSITION_UNIT;
+    currentCoordinates.x = evtMove.clientX;
+    currentCoordinates.y = evtMove.clientY;
+    mainPin.style.top = pinMainTop + dependencies.data.POSITION_UNIT;
+    mainPin.style.left = pinMainLeft + dependencies.data.POSITION_UNIT;
   }
 
   function onDocumentMouseUp() {
@@ -52,7 +50,7 @@
   }
 
   function onMainPinEnterKeyDown(evt) {
-    if (evt.keyCode === ENTER_KEYCODE) {
+    if (evt.keyCode === dependencies.data.ENTER_KEYCODE) {
       dependencies.form.makePageActive();
       mainPin.removeEventListener('keydown', onMainPinEnterKeyDown);
     }
@@ -62,8 +60,8 @@
     if (!dependencies.data.OFFERS) {
       return;
     }
-    currentCoords.x = evtMouseDown.clientX;
-    currentCoords.y = evtMouseDown.clientY;
+    currentCoordinates.x = evtMouseDown.clientX;
+    currentCoordinates.y = evtMouseDown.clientY;
     document.addEventListener('mousemove', onDocumentMouseMove);
     document.addEventListener('mouseup', onDocumentMouseUp);
     mainPin.addEventListener('mouseup', onMainPinMouseUp);

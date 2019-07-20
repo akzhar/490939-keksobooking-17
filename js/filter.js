@@ -8,25 +8,9 @@
     map: window.map
   };
 
-  var Price = {
-    LOW: {
-      FROM: 0,
-      TO: 10000
-    },
-    MIDDLE: {
-      FROM: 10000,
-      TO: 50000
-    },
-    HIGH: {
-      FROM: 50000,
-      TO: Infinity
-    }
-  };
-  var ANY_VALUE = 'any';
   var mapFilters = document.querySelector('.map__filters');
   var mapPins = document.querySelector('.map__pins');
-  var dataToBeFiltered = [];
-  var Filter = {
+  var FilterFunction = {
     'TYPE': checkType,
     'PRICE': checkPrice,
     'ROOMS': checkRooms,
@@ -38,23 +22,12 @@
     'ELEVATOR': checkFeature,
     'CONDITIONER': checkFeature
   };
-  var IdToKey = {
-    'housing-type': 'TYPE',
-    'housing-price': 'PRICE',
-    'housing-rooms': 'ROOMS',
-    'housing-guests': 'GUESTS',
-    'filter-wifi': 'WIFI',
-    'filter-dishwasher': 'DISHWASHER',
-    'filter-parking': 'PARKING',
-    'filter-washer': 'WASHER',
-    'filter-elevator': 'ELEVATOR',
-    'filter-conditioner': 'CONDITIONER'
-  };
   var filterState = {};
+  var dataToBeFiltered = [];
 
   function filterData(callback, filterValue) {
     var filteredData = dataToBeFiltered;
-    if (filterValue !== ANY_VALUE) {
+    if (filterValue !== dependencies.data.FILTER_ANY_VALUE) {
       filteredData = dataToBeFiltered.filter(function (it) {
         return callback(it, filterValue);
       });
@@ -70,8 +43,8 @@
   }
 
   function checkPrice(it, filterValue) {
-    var lowerLimit = Price[filterValue.toUpperCase()].FROM;
-    var upperLimit = Price[filterValue.toUpperCase()].TO;
+    var lowerLimit = dependencies.data.PriceLimit[filterValue.toUpperCase()].FROM;
+    var upperLimit = dependencies.data.PriceLimit[filterValue.toUpperCase()].TO;
     var condition = ((it.offer.price >= lowerLimit) && (it.offer.price <= upperLimit));
     return checkIt(condition, it);
   }
@@ -108,14 +81,14 @@
     dataToBeFiltered = dependencies.data.OFFERS;
     var filter = evt.target;
     var id = filter.id;
-    var key = IdToKey[id];
+    var key = dependencies.data.IdToKey[id];
     filterState[key] = filter.value;
     if (filter.checked === false) {
-      filterState[key] = ANY_VALUE;
+      filterState[key] = dependencies.data.FILTER_ANY_VALUE;
     }
     for (var filterKey in filterState) {
       if (filterState.hasOwnProperty(filterKey)) {
-        var callback = Filter[filterKey];
+        var callback = FilterFunction[filterKey];
         var filterValue = filterState[filterKey];
         filterData(callback, filterValue);
       }
