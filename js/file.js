@@ -11,9 +11,17 @@
   var photosContainer = document.querySelector('.ad-form__photo-container');
   var dragSourceEl = null;
 
-  function doIfFileTypeIsValid(file, callback) {
+  function doIfFileIsValid(file, callback) {
     if (dependencies.data.VALID_IMG_TYPES.includes(file.type)) {
       doAfterReadFile(file, callback);
+    }
+  }
+
+  function renderPhotosIfFilesIsValid(files) {
+    for (var file in files) {
+      if (files.hasOwnProperty(file)) {
+        doIfFileIsValid(files[file], renderPhoto);
+      }
     }
   }
 
@@ -104,20 +112,36 @@
 
   function onAvatarInputChange() {
     var file = avatarInput.files[0];
-    doIfFileTypeIsValid(file, renderAvatar);
+    doIfFileIsValid(file, renderAvatar);
   }
 
   function onPhotoInputChange() {
     var files = photoInput.files;
-    for (var file in files) {
-      if (files.hasOwnProperty(file)) {
-        doIfFileTypeIsValid(files[file], renderPhoto);
-      }
-    }
+    renderPhotosIfFilesIsValid(files);
+  }
+
+  function onDropZoneDragOver(evt) {
+    evt.preventDefault();
+    evt.dataTransfer.dropEffect = 'copy';
+  }
+
+  function onAvatarDropZoneDrop(evt) {
+    evt.preventDefault();
+    var file = evt.dataTransfer.files[0];
+    doIfFileIsValid(file, renderAvatar);
+  }
+
+  function onPhotoDropZoneDrop(evt) {
+    evt.preventDefault();
+    var files = evt.dataTransfer.files;
+    renderPhotosIfFilesIsValid(files);
   }
 
   window.file = {
     onAvatarInputChange: onAvatarInputChange,
-    onPhotoInputChange: onPhotoInputChange
+    onPhotoInputChange: onPhotoInputChange,
+    onDropZoneDragOver: onDropZoneDragOver,
+    onAvatarDropZoneDrop: onAvatarDropZoneDrop,
+    onPhotoDropZoneDrop: onPhotoDropZoneDrop
   };
 })();

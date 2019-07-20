@@ -36,6 +36,8 @@
   var features = adForm.querySelectorAll('input[name="features"]');
   var resetBtn = adForm.querySelector('.ad-form__reset');
   var avatarInput = document.querySelector('#avatar');
+  var avatarDropZone = document.querySelector('.ad-form-header__drop-zone');
+  var photoDropZone = document.querySelector('.ad-form__drop-zone');
   var photoInput = document.querySelector('#images');
   var avatarContainer = document.querySelector('.ad-form-header__preview > img');
   var photosContainer = document.querySelector('.ad-form__photo-container');
@@ -101,6 +103,10 @@
     addSelectEventListeners();
     unlock();
     mapBlock.classList.remove(MAP_FADED_CLASS);
+    avatarDropZone.addEventListener('dragover', dependencies.file.onDropZoneDragOver);
+    avatarDropZone.addEventListener('drop', dependencies.file.onAvatarDropZoneDrop);
+    photoDropZone.addEventListener('dragover', dependencies.file.onDropZoneDragOver);
+    photoDropZone.addEventListener('drop', dependencies.file.onPhotoDropZoneDrop);
     avatarInput.addEventListener('change', dependencies.file.onAvatarInputChange);
     photoInput.addEventListener('change', dependencies.file.onPhotoInputChange);
     resetBtn.addEventListener('click', onResetBtnClick);
@@ -116,6 +122,10 @@
     removeSelectEventListeners();
     lock();
     mapBlock.classList.add(MAP_FADED_CLASS);
+    avatarDropZone.removeEventListener('dragover', dependencies.file.onDropZoneDragOver);
+    avatarDropZone.removeEventListener('drop', dependencies.file.onAvatarDropZoneDrop);
+    photoDropZone.removeEventListener('dragover', dependencies.file.onDropZoneDragOver);
+    photoDropZone.removeEventListener('drop', dependencies.file.onPhotoDropZoneDrop);
     avatarInput.removeEventListener('change', dependencies.file.onAvatarInputChange);
     photoInput.removeEventListener('change', dependencies.file.onPhotoInputChange);
     resetBtn.removeEventListener('click', onResetBtnClick);
