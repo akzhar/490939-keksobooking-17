@@ -24,6 +24,9 @@
   }
 
   function create(apartment, i) {
+    if (!apartment.offer) {
+      return;
+    }
     var pin = templatePin.cloneNode(true);
     var pinImg = pin.querySelector('img');
     var pinX = apartment.location.x - dependencies.data.PinSize.WIDTH / 2;

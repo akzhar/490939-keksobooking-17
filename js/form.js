@@ -9,7 +9,9 @@
     mainPin: window.mainPin,
     filter: window.filter,
     message: window.message,
-    validation: window.validation
+    validation: window.validation,
+    pin: window.pin,
+    file: window.file
   };
 
   var FORM_DISABLED_CLASS = 'ad-form--disabled';
@@ -17,6 +19,7 @@
   var main = document.querySelector('main');
   var adForm = main.querySelector('.ad-form');
   var mapBlock = main.querySelector('.map');
+  var mapPins = mapBlock.querySelector('.map__pins');
   var inputs = adForm.querySelectorAll('input');
   var selects = document.querySelectorAll('select');
   var checkboxes = mapBlock.querySelectorAll('input[type="checkbox"]');
@@ -32,6 +35,12 @@
   var capacitySelect = adForm.querySelector('#capacity');
   var features = adForm.querySelectorAll('input[name="features"]');
   var resetBtn = adForm.querySelector('.ad-form__reset');
+  var avatarInput = document.querySelector('#avatar');
+  var avatarDropZone = document.querySelector('.ad-form-header__drop-zone');
+  var photoDropZone = document.querySelector('.ad-form__drop-zone');
+  var photoInput = document.querySelector('#images');
+  var avatarContainer = document.querySelector('.ad-form-header__preview > img');
+  var photosContainer = document.querySelector('.ad-form__photo-container');
 
   function onResetBtnClick(evt) {
     evt.preventDefault();
@@ -61,15 +70,64 @@
     [].forEach.call(features, function (it) {
       it.checked = false;
     });
+    avatarContainer.src = dependencies.data.DEFAULT_MUFFIN_IMG_PATH;
+    var imgs = photosContainer.querySelectorAll('.ad-form__photo');
+    [].forEach.call(imgs, function (it) {
+      photosContainer.removeChild(it);
+    });
+    var blank = document.createElement('div');
+    blank.classList.add(dependencies.data.PHOTO_BLANK_CLASS);
+    photosContainer.appendChild(blank);
+  }
+
+  function addSelectEventListeners() {
+    typeSelect.addEventListener('change', dependencies.validation.onTypeSelectChange);
+    timeInSelect.addEventListener('change', dependencies.validation.onTimeSelectChange);
+    timeOutSelect.addEventListener('change', dependencies.validation.onTimeSelectChange);
+    roomsSelect.addEventListener('change', dependencies.validation.onRoomsSelectChange);
+  }
+
+  function removeSelectEventListeners() {
+    typeSelect.removeEventListener('change', dependencies.validation.onTypeSelectChange);
+    timeInSelect.removeEventListener('change', dependencies.validation.onTimeSelectChange);
+    timeOutSelect.removeEventListener('change', dependencies.validation.onTimeSelectChange);
+    roomsSelect.removeEventListener('change', dependencies.validation.onRoomsSelectChange);
+  }
+
+  function makePageActive() {
+    if (!mapBlock.classList.contains(MAP_FADED_CLASS)) {
+      return;
+    }
+    var renderedPins = dependencies.pin.render(dependencies.data.OFFERS);
+    mapPins.appendChild(renderedPins);
+    addSelectEventListeners();
+    unlock();
+    mapBlock.classList.remove(MAP_FADED_CLASS);
+    avatarDropZone.addEventListener('dragover', dependencies.file.onDropZoneDragOver);
+    avatarDropZone.addEventListener('drop', dependencies.file.onAvatarDropZoneDrop);
+    photoDropZone.addEventListener('dragover', dependencies.file.onDropZoneDragOver);
+    photoDropZone.addEventListener('drop', dependencies.file.onPhotoDropZoneDrop);
+    avatarInput.addEventListener('change', dependencies.file.onAvatarInputChange);
+    photoInput.addEventListener('change', dependencies.file.onPhotoInputChange);
+    resetBtn.addEventListener('click', onResetBtnClick);
+    adForm.addEventListener('submit', onSubmit);
+    window.addEventListener('resize', dependencies.map.updateLimits);
   }
 
   function makePageInactive() {
     clean();
-    lock();
+    dependencies.map.clean();
     dependencies.mainPin.resetCoords();
     dependencies.mainPin.fillCenterCoordsInAddress();
-    dependencies.map.clean();
+    removeSelectEventListeners();
+    lock();
     mapBlock.classList.add(MAP_FADED_CLASS);
+    avatarDropZone.removeEventListener('dragover', dependencies.file.onDropZoneDragOver);
+    avatarDropZone.removeEventListener('drop', dependencies.file.onAvatarDropZoneDrop);
+    photoDropZone.removeEventListener('dragover', dependencies.file.onDropZoneDragOver);
+    photoDropZone.removeEventListener('drop', dependencies.file.onPhotoDropZoneDrop);
+    avatarInput.removeEventListener('change', dependencies.file.onAvatarInputChange);
+    photoInput.removeEventListener('change', dependencies.file.onPhotoInputChange);
     resetBtn.removeEventListener('click', onResetBtnClick);
     adForm.removeEventListener('submit', onSubmit);
     window.removeEventListener('resize', dependencies.map.updateLimits);
@@ -106,6 +164,7 @@
   window.form = {
     unlock: unlock,
     onSubmit: onSubmit,
-    onResetBtnClick: onResetBtnClick
+    onResetBtnClick: onResetBtnClick,
+    makePageActive: makePageActive
   };
 })();

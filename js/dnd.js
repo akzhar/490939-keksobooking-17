@@ -4,31 +4,14 @@
   var dependencies = {
     data: window.data,
     form: window.form,
-    pin: window.pin,
     mainPin: window.mainPin,
-    validation: window.validation,
-    map: window.map
   };
 
-  var MAP_FADED_CLASS = 'map--faded';
+  var ENTER_KEYCODE = 13;
   var POSITION_UNIT = 'px';
   var mapBlock = document.querySelector('.map');
   var mainPin = mapBlock.querySelector('.map__pin--main');
-  var mapPins = mapBlock.querySelector('.map__pins');
-  var adForm = document.querySelector('.ad-form');
-  var typeSelect = adForm.querySelector('#type');
-  var timeInSelect = adForm.querySelector('#timein');
-  var timeOutSelect = adForm.querySelector('#timeout');
-  var roomsSelect = adForm.querySelector('#room_number');
-  var resetBtn = adForm.querySelector('.ad-form__reset');
   var currentCoords = {};
-
-  function addSelectEventListeners() {
-    typeSelect.addEventListener('change', dependencies.validation.onTypeSelectChange);
-    timeInSelect.addEventListener('change', dependencies.validation.onTimeSelectChange);
-    timeOutSelect.addEventListener('change', dependencies.validation.onTimeSelectChange);
-    roomsSelect.addEventListener('change', dependencies.validation.onRoomsSelectChange);
-  }
 
   function onDocumentMouseMove(evtMove) {
     var shift = {
@@ -64,18 +47,15 @@
   }
 
   function onMainPinMouseUp() {
-    if (!mapBlock.classList.contains(MAP_FADED_CLASS)) {
-      return;
-    }
-    var renderedPins = dependencies.pin.render(dependencies.data.OFFERS);
-    mapPins.appendChild(renderedPins);
-    addSelectEventListeners();
-    dependencies.form.unlock();
-    mapBlock.classList.remove(MAP_FADED_CLASS);
-    resetBtn.addEventListener('click', dependencies.form.onResetBtnClick);
-    adForm.addEventListener('submit', dependencies.form.onSubmit);
-    window.addEventListener('resize', dependencies.map.updateLimits);
+    dependencies.form.makePageActive();
     mainPin.removeEventListener('mouseup', onMainPinMouseUp);
+  }
+
+  function onMainPinEnterKeyDown(evt) {
+    if (evt.keyCode === ENTER_KEYCODE) {
+      dependencies.form.makePageActive();
+      mainPin.removeEventListener('keydown', onMainPinEnterKeyDown);
+    }
   }
 
   function onMainPinMouseDown(evtMouseDown) {
@@ -91,6 +71,6 @@
 
   window.dnd = {
     onMainPinMouseDown: onMainPinMouseDown,
-    onMainPinMouseUp: onMainPinMouseUp
+    onMainPinEnterKeyDown: onMainPinEnterKeyDown
   };
 })();

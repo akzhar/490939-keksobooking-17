@@ -2,6 +2,7 @@
 
 (function () {
   var dependencies = {
+    utils: window.utils,
     data: window.data,
     pin: window.pin,
     map: window.map
@@ -24,7 +25,7 @@
   var ANY_VALUE = 'any';
   var mapFilters = document.querySelector('.map__filters');
   var mapPins = document.querySelector('.map__pins');
-  var offers = [];
+  var dataToBeFiltered = [];
   var Filter = {
     'TYPE': checkType,
     'PRICE': checkPrice,
@@ -49,24 +50,16 @@
     'filter-elevator': 'ELEVATOR',
     'filter-conditioner': 'CONDITIONER'
   };
-  var checksQueue = [];
   var filterState = {};
 
-  function renderFilteredOffers(data) {
-    dependencies.map.clean();
-    var renderedPins = dependencies.pin.render(data);
-    mapPins.appendChild(renderedPins);
-  }
-
-  function filterOffers(callback, filterValue) {
-    var filteredOffers = offers;
+  function filterData(callback, filterValue) {
+    var filteredData = dataToBeFiltered;
     if (filterValue !== ANY_VALUE) {
-      filteredOffers = offers.filter(function (it) {
+      filteredData = dataToBeFiltered.filter(function (it) {
         return callback(it, filterValue);
       });
     }
-    offers = filteredOffers;
-    renderFilteredOffers(offers);
+    dataToBeFiltered = filteredData;
   }
 
   function checkIt(condition, it) {
@@ -105,20 +98,14 @@
     return checkIt(condition, it);
   }
 
-  function updateChecksQueue() {
-    for (var checkKey in filterState) {
-      if (filterState.propertyIsEnumerable(checkKey)) {
-        var checkValue = filterState[checkKey];
-        checksQueue.push({
-          key: checkKey,
-          value: checkValue
-        });
-      }
-    }
+  function renderFilteredOffers() {
+    dependencies.map.clean();
+    var renderedPins = dependencies.pin.render(dataToBeFiltered);
+    mapPins.appendChild(renderedPins);
   }
 
   function onFiltersChange(evt) {
-    offers = dependencies.data.OFFERS;
+    dataToBeFiltered = dependencies.data.OFFERS;
     var filter = evt.target;
     var id = filter.id;
     var key = IdToKey[id];
@@ -126,12 +113,14 @@
     if (filter.checked === false) {
       filterState[key] = ANY_VALUE;
     }
-    updateChecksQueue();
-    checksQueue.forEach(function (check) {
-      var callback = Filter[check.key];
-      filterOffers(callback, check.value);
-    });
-    checksQueue.length = 0;
+    for (var filterKey in filterState) {
+      if (filterState.hasOwnProperty(filterKey)) {
+        var callback = Filter[filterKey];
+        var filterValue = filterState[filterKey];
+        filterData(callback, filterValue);
+      }
+    }
+    dependencies.utils.debounce(renderFilteredOffers)();
   }
 
   function switchOn() {
