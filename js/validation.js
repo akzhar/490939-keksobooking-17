@@ -5,9 +5,6 @@
     data: window.data
   };
 
-  var CAPACITY_VALUE_EXCEPTION = '0';
-  var ROOMS_VALUE_EXCEPTION = '100';
-  var DISABLED_ATTRIBUTE = 'disabled';
   var adForm = document.querySelector('.ad-form');
   var typeSelect = adForm.querySelector('#type');
   var timeInSelect = adForm.querySelector('#timein');
@@ -25,25 +22,29 @@
     priceInput.placeholder = minPrice;
   }
 
-  function onTimeSelectChange(evt) {
-    var targetSelect = evt.target;
-    var conectedSelect = (targetSelect === timeInSelect) ? timeOutSelect : timeInSelect;
-    conectedSelect.value = targetSelect.value;
+  function onTimeInSelectChange(evt) {
+    var conectedSelect = timeOutSelect;
+    conectedSelect.value = evt.target.value;
+  }
+
+  function onTimeOutSelectChange(evt) {
+    var conectedSelect = timeInSelect;
+    conectedSelect.value = evt.target.value;
   }
 
   function onRoomsSelectChange() {
     var roomsValue = roomsSelect.value;
-    var isException = (roomsValue === ROOMS_VALUE_EXCEPTION);
+    var isException = (roomsValue === dependencies.data.ROOMS_VALUE_EXCEPTION);
     if (isException) {
-      roomsValue = CAPACITY_VALUE_EXCEPTION;
+      roomsValue = dependencies.data.CAPACITY_VALUE_EXCEPTION;
     }
     conectedSelectChildren.forEach(function (it) {
-      it.removeAttribute(DISABLED_ATTRIBUTE);
-      var ExceptionCondition = (it.value !== CAPACITY_VALUE_EXCEPTION);
-      var StandardCondition = (it.value > roomsValue || it.value === CAPACITY_VALUE_EXCEPTION);
+      it.removeAttribute(dependencies.data.DISABLED_ATTRIBUTE);
+      var ExceptionCondition = (it.value !== dependencies.data.CAPACITY_VALUE_EXCEPTION);
+      var StandardCondition = (it.value > roomsValue || it.value === dependencies.data.CAPACITY_VALUE_EXCEPTION);
       var condition = (isException) ? ExceptionCondition : StandardCondition;
       if (condition) {
-        it.setAttribute(DISABLED_ATTRIBUTE, true);
+        it.setAttribute(dependencies.data.DISABLED_ATTRIBUTE, true);
       }
     });
     capacitySelect.value = roomsValue;
@@ -51,7 +52,8 @@
 
   window.validation = {
     onTypeSelectChange: onTypeSelectChange,
-    onTimeSelectChange: onTimeSelectChange,
+    onTimeInSelectChange: onTimeInSelectChange,
+    onTimeOutSelectChange: onTimeOutSelectChange,
     onRoomsSelectChange: onRoomsSelectChange
   };
 })();

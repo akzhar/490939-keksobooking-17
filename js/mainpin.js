@@ -5,13 +5,12 @@
     data: window.data
   };
 
-  var POSITION_UNIT = 'px';
   var pinMain = document.querySelector('.map__pin--main');
   var addressInput = document.querySelector('#address');
 
   function resetCoords() {
-    pinMain.style.top = dependencies.data.PinStart.X + POSITION_UNIT;
-    pinMain.style.left = dependencies.data.PinStart.Y + POSITION_UNIT;
+    pinMain.style.top = dependencies.data.PinStartCoordinate.X + dependencies.data.POSITION_UNIT;
+    pinMain.style.left = dependencies.data.PinStartCoordinate.Y + dependencies.data.POSITION_UNIT;
   }
 
   function getPinCenterCoords() {

@@ -173,7 +173,7 @@
           <label class="ad-form__label">Фотографии жилья</label>
           <div class="ad-form__photo-container">
             <div class="ad-form__upload">
-              <input type="file" id="images" name="images" class="ad-form__input visually-hidden" disabled>
+              <input type="file" id="images" name="images" class="ad-form__input visually-hidden" multiple disabled>
               <label for="images" class="ad-form__drop-zone">Загрузите или&nbsp;перетащите сюда фото</label>
             </div>
             <div class="ad-form__photo"></div>
@@ -250,16 +250,17 @@
 
 <script src="js/utils.js"></script> <!-- no -->
 <script src="js/backend.js"></script> <!-- no -->
-<script src="js/message.js"></script> <!-- no -->
-<script src="js/data.js"></script> <!-- backend, message -->
-<script src="js/map.js"></script> <!-- data -->
-<script src="js/card.js"></script> <!-- data, map -->
-<script src="js/pin.js"></script> <!-- data, card, map -->
-<script src="js/filter.js"></script> <!-- data, pin, map -->
+<script src="js/data.js"></script> <!-- no -->
+<script src="js/message.js"></script> <!-- data -->
 <script src="js/validation.js"></script> <!-- data -->
 <script src="js/mainpin.js"></script> <!-- data -->
-<script src="js/form.js"></script> <!-- backend, data, map, utils, mainpin, filter, message, validation -->
-<script src="js/dnd.js"></script> <!-- data, form, pin, mainpin, validation, map -->
-<script src="js/main.js"></script> <!-- dnd, mainPin -->
+<script src="js/file.js"></script> <!-- data -->
+<script src="js/map.js"></script> <!-- data -->
+<script src="js/card.js"></script> <!-- utils, data, map -->
+<script src="js/pin.js"></script> <!-- data, card, map -->
+<script src="js/filter.js"></script> <!-- utils, data, map, pin -->
+<script src="js/form.js"></script> <!-- utils, backend, message, data, validation, mainpin, file, map, pin, filter -->
+<script src="js/dnd.js"></script> <!-- data, mainpin, form -->
+<script src="js/main.js"></script> <!-- backend, dta, message, dnd, mainpin -->
 </body>
 </html>
