@@ -7,6 +7,10 @@
     map: window.map
   };
 
+  var FunctionGet = {
+    'FEATURES': getFeature,
+    'PHOTOS': getPhoto
+  };
   var mapBlock = document.querySelector('.map');
   var mapPins = mapBlock.querySelector('.map__pins');
   var templateCard = document.querySelector('#card').content.querySelector('.map__card');
@@ -18,68 +22,22 @@
     return fragment;
   }
 
-  function renderBlockIfDataExists(parentBlock, data, block) {
-    if (data !== undefined) {
-      block.textContent = data;
-    } else {
-      parentBlock.removeChild(block);
-    }
-  }
-
-  function returnDataIfExists(data) {
-    if (data !== undefined) {
-      return data;
-    }
-    return undefined;
-  }
-
-  function createPhoto(it, parentBlock) {
+  function getPhoto(data) {
     var photo = document.createElement('img');
     photo.classList.add(dependencies.data.PHOTO_CLASS);
     photo.width = dependencies.data.PhotoSize.WIDTH;
     photo.height = dependencies.data.PhotoSize.HEIGHT;
-    photo.src = it;
-    parentBlock.appendChild(photo);
+    photo.src = data;
+    return photo;
   }
 
-  function createFeature(it, parentBlock) {
+  function getFeature(data) {
     var feature = document.createElement('li');
-    feature.classList.add(dependencies.data.FEATURE_CLASS, dependencies.data.FEATURE_CLASS + '--' + it);
-    parentBlock.appendChild(feature);
+    feature.classList.add(dependencies.data.FEATURE_CLASS, dependencies.data.FEATURE_CLASS + '--' + data);
+    return feature;
   }
 
-  function createCard(apartment, i) {
-    var card = templateCard.cloneNode(true);
-    var avatarBlock = card.querySelector('.popup__avatar');
-    var titleBlock = card.querySelector('.popup__title');
-    var addressBlock = card.querySelector('.popup__text--address');
-    var priceBlock = card.querySelector('.popup__text--price');
-    var typeBlock = card.querySelector('.popup__type');
-    var roomsAndGuestsBlock = card.querySelector('.popup__text--capacity');
-    var checkInAndOutBlock = card.querySelector('.popup__text--time');
-    var featuresBlock = card.querySelector('.popup__features');
-    var descriptionBlock = card.querySelector('.popup__description');
-    var photosBlock = card.querySelector('.popup__photos');
-    var closeBtn = card.querySelector('.popup__close');
-    var Data = {
-      AVATAR: returnDataIfExists(apartment.author.avatar),
-      TITLE: returnDataIfExists(apartment.offer.title),
-      ADDRESS: returnDataIfExists(apartment.offer.address),
-      PRICE: returnDataIfExists(apartment.offer.price),
-      TYPE: returnDataIfExists(apartment.offer.type),
-      ROOMS: returnDataIfExists(apartment.offer.rooms),
-      GUESTS: returnDataIfExists(apartment.offer.guests),
-      CHECK_IN: returnDataIfExists(apartment.offer.checkin),
-      CHECK_OUT: returnDataIfExists(apartment.offer.checkout),
-      FEATURES: apartment.offer.features,
-      DESCRIPTION: returnDataIfExists(apartment.offer.description),
-      PHOTOS: apartment.offer.photos,
-      ROOMS_AND_GUESTS: undefined,
-      CHECK_IN_AND_OUT: undefined
-    };
-
-    dependencies.utils.cleanBlocksChildren(featuresBlock);
-    dependencies.utils.cleanBlocksChildren(photosBlock);
+  function defineDataToBeFilled(Data) {
     if (Data.PRICE !== undefined) {
       Data.PRICE = Data.PRICE + dependencies.data.PRICE_UNIT;
     }
@@ -92,34 +50,88 @@
       Data.ROOMS_AND_GUESTS = Data.ROOMS + ' ' + roomsWord + ' для ' + Data.GUESTS + ' ' + guestWord;
     }
     if (Data.CHECK_IN !== undefined && Data.CHECK_OUT !== undefined) {
-      Data.CHECK_IN_AND_OUT = 'Заезд после ' + apartment.offer.checkin + ', выезд до ' + apartment.offer.checkout;
+      Data.CHECK_IN_AND_OUT = 'Заезд после ' + Data.CHECK_IN + ', выезд до ' + Data.CHECK_OUT;
     }
-    if (Data.AVATAR !== undefined) {
-      avatarBlock.src = Data.AVATAR;
-    } else {
-      card.removeChild(avatarBlock);
+  }
+
+  function getListOfBlockElements(callback, dataObject) {
+    var fragment = document.createDocumentFragment();
+    for (var key in dataObject) {
+      if (dataObject.hasOwnProperty(key)) {
+        var element = callback(dataObject[key]);
+        fragment.appendChild(element);
+      }
     }
-    renderBlockIfDataExists(card, Data.TITLE, titleBlock);
-    renderBlockIfDataExists(card, Data.ADDRESS, addressBlock);
-    renderBlockIfDataExists(card, Data.PRICE, priceBlock);
-    renderBlockIfDataExists(card, Data.TYPE, typeBlock);
-    renderBlockIfDataExists(card, Data.ROOMS_AND_GUESTS, roomsAndGuestsBlock);
-    renderBlockIfDataExists(card, Data.CHECK_IN_AND_OUT, checkInAndOutBlock);
-    renderBlockIfDataExists(card, Data.DESCRIPTION, descriptionBlock);
-    if (Data.FEATURES.length !== 0) {
-      Data.FEATURES.forEach(function (it) {
-        createFeature(it, featuresBlock);
-      });
-    } else {
-      card.removeChild(featuresBlock);
+    return fragment;
+  }
+
+  function renderBlockIfDataExists(block, card) {
+    var dataIsObject = (typeof block.data === 'object');
+    var dataExists = (block.data !== undefined && block.data.length !== 0);
+
+    if (dataExists && dataIsObject) {
+      var list = getListOfBlockElements(FunctionGet[block.key], block.data);
+      block.node.appendChild(list);
     }
-    if (Data.PHOTOS.length !== 0) {
-      Data.PHOTOS.forEach(function (it) {
-        createPhoto(it, photosBlock);
-      });
-    } else {
-      card.removeChild(photosBlock);
+    if (dataExists && !dataIsObject) {
+      var nodeIsImg = (block.node.tagName === 'IMG');
+      block.node.src = (nodeIsImg) ? block.data : null;
+      block.node.textContent = (!nodeIsImg) ? block.data : null;
     }
+    if (!dataExists) {
+      card.removeChild(block.node);
+    }
+  }
+
+  function renderBlocksIfDataExists(Block, Data, card) {
+    for (var key in Block) {
+      if (Block.hasOwnProperty(key)) {
+        var block = {
+          key: key,
+          node: Block[key],
+          data: Data[key]
+        };
+        renderBlockIfDataExists(block, card);
+      }
+    }
+  }
+
+  function createCard(apartment, i) {
+    var card = templateCard.cloneNode(true);
+    var closeBtn = card.querySelector('.popup__close');
+    var Block = {
+      AVATAR: card.querySelector('.popup__avatar'),
+      TITLE: card.querySelector('.popup__title'),
+      ADDRESS: card.querySelector('.popup__text--address'),
+      PRICE: card.querySelector('.popup__text--price'),
+      TYPE: card.querySelector('.popup__type'),
+      FEATURES: card.querySelector('.popup__features'),
+      DESCRIPTION: card.querySelector('.popup__description'),
+      PHOTOS: card.querySelector('.popup__photos'),
+      ROOMS_AND_GUESTS: card.querySelector('.popup__text--capacity'),
+      CHECK_IN_AND_OUT: card.querySelector('.popup__text--time')
+    };
+    var Data = {
+      AVATAR: apartment.author.avatar,
+      TITLE: apartment.offer.title,
+      ADDRESS: apartment.offer.address,
+      PRICE: apartment.offer.price,
+      TYPE: apartment.offer.type,
+      FEATURES: apartment.offer.features,
+      DESCRIPTION: apartment.offer.description,
+      PHOTOS: apartment.offer.photos,
+      ROOMS: apartment.offer.rooms,
+      GUESTS: apartment.offer.guests,
+      CHECK_IN: apartment.offer.checkin,
+      CHECK_OUT: apartment.offer.checkout,
+      ROOMS_AND_GUESTS: undefined,
+      CHECK_IN_AND_OUT: undefined
+    };
+
+    dependencies.utils.cleanBlocksChildren(Block.FEATURES);
+    dependencies.utils.cleanBlocksChildren(Block.PHOTOS);
+    defineDataToBeFilled(Data);
+    renderBlocksIfDataExists(Block, Data, card);
     card.setAttribute('data-id', i);
     closeBtn.addEventListener('click', onCloseBtnClick);
     window.addEventListener('keydown', onEscKeyDown);
@@ -144,20 +156,16 @@
     mapPins.removeChild(popup);
   }
 
-  function isOpened(i) {
+  function isAlreadyOpened(i) {
     var card = mapPins.querySelector('.map__card');
-    if (card === null) {
-      return false;
-    }
-    var dataId = card.getAttribute('data-id');
-    if (+dataId === i) {
-      return true;
+    if (card !== null) {
+      return (+card.getAttribute('data-id') === i);
     }
     return false;
   }
 
   function open(i) {
-    if (isOpened(i)) {
+    if (isAlreadyOpened(i)) {
       return;
     }
     var apartment = dependencies.data.renderedOffers[i];

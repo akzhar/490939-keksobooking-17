@@ -1,15 +1,15 @@
 'use strict';
 
 (function () {
-  var Url = {
-    GET: 'https://js.dump.academy/keksobooking/data',
-    POST: 'https://js.dump.academy/keksobooking'
-  };
   var MAX_RESPONSE_TIME = 5000;
   var MS_PER_SECOND = 1000;
   var JSON_TYPE = 'json';
   var TIME_UNIT = ' c';
   var OK_STATUS = 200;
+  var Url = {
+    GET: 'https://js.dump.academy/keksobooking/data',
+    POST: 'https://js.dump.academy/keksobooking'
+  };
 
   function load(onLoad, onError, method, data) {
     var xhr = new XMLHttpRequest();

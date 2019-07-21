@@ -1,23 +1,25 @@
 'use strict';
 
 (function () {
-  var ESC_KEYCODE = 27;
-  var HIDDEN_CLASS = 'hidden';
+  var dependencies = {
+    data: window.data
+  };
+
   var main = document.querySelector('main');
   var templateErr = document.querySelector('#error').content.querySelector('.error');
   var templateSuccess = document.querySelector('#success').content.querySelector('.success');
 
   function close() {
     var msg = main.querySelector('.success');
-    if (msg.classList.contains(HIDDEN_CLASS)) {
+    if (msg.classList.contains(dependencies.data.HIDDEN_CLASS)) {
       msg = main.querySelector('.error');
     }
-    msg.classList.add(HIDDEN_CLASS);
+    msg.classList.add(dependencies.data.HIDDEN_CLASS);
     removeWindowListeners();
   }
 
   function onEscKeyDown(evt) {
-    if (evt.keyCode === ESC_KEYCODE) {
+    if (evt.keyCode === dependencies.data.ESC_KEYCODE) {
       close();
     }
   }
@@ -43,13 +45,13 @@
 
   function renderMsg(template) {
     var msg = template.cloneNode(true);
-    msg.classList.add(HIDDEN_CLASS);
+    msg.classList.add(dependencies.data.HIDDEN_CLASS);
     main.appendChild(msg);
   }
 
   function showSuccess() {
     var msg = main.querySelector('.success');
-    msg.classList.remove(HIDDEN_CLASS);
+    msg.classList.remove(dependencies.data.HIDDEN_CLASS);
   }
 
   function showError(msgText, callback) {
@@ -58,10 +60,10 @@
     var errbtn = msg.querySelector('.error__button');
     errMsg.textContent = msgText;
     errbtn.addEventListener('click', function () {
-      msg.classList.add(HIDDEN_CLASS);
+      msg.classList.add(dependencies.data.HIDDEN_CLASS);
       callback();
     });
-    msg.classList.remove(HIDDEN_CLASS);
+    msg.classList.remove(dependencies.data.HIDDEN_CLASS);
   }
 
   window.message = {

@@ -13,17 +13,16 @@
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < Math.min(apartments.length, dependencies.data.PINS_COUNT_LIMIT); i++) {
       var apartment = apartments[i];
-      var pin = create(apartment, i);
-      dependencies.data.renderedOffers[i] = apartment;
-      fragment.appendChild(pin);
+      if (apartment.offer) {
+        var pin = create(apartment, i);
+        dependencies.data.renderedOffers[i] = apartment;
+        fragment.appendChild(pin);
+      }
     }
     return fragment;
   }
 
   function create(apartment, i) {
-    if (!apartment.offer) {
-      return null;
-    }
     var pin = templatePin.cloneNode(true);
     var pinImg = pin.querySelector('img');
     var pinX = apartment.location.x - dependencies.data.PinSize.WIDTH / 2;
