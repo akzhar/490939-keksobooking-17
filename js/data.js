@@ -1,27 +1,7 @@
 'use strict';
 
 (function () {
-  var dependencies = {
-    backend: window.backend,
-    message: window.message
-  };
-
   var mapBlock = document.querySelector('.map');
-
-  function onError(msgText) {
-    dependencies.message.showError(msgText, load);
-  }
-
-  function onSuccess(data) {
-    window.data.OFFERS = data;
-  }
-
-  function load() {
-    dependencies.backend.load(onSuccess, onError, 'GET');
-  }
-
-  dependencies.message.render();
-  load();
 
   window.data = {
     renderedOffers: {},
@@ -83,6 +63,7 @@
       'image/jpeg',
       'image/svg'
     ],
+    HIDDEN_CLASS: 'hidden',
     PHOTO_BLANK_CLASS: 'ad-form__photo',
     FORM_DISABLED_CLASS: 'ad-form--disabled',
     MAP_FADED_CLASS: 'map--faded',

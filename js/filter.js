@@ -11,10 +11,10 @@
   var mapFilters = document.querySelector('.map__filters');
   var mapPins = document.querySelector('.map__pins');
   var FilterFunction = {
-    'TYPE': checkType,
+    'TYPE': checkByType,
     'PRICE': checkPrice,
-    'ROOMS': checkRooms,
-    'GUESTS': checkGuests,
+    'ROOMS': checkByType,
+    'GUESTS': checkByType,
     'WIFI': checkFeature,
     'DISHWASHER': checkFeature,
     'PARKING': checkFeature,
@@ -25,50 +25,34 @@
   var filterState = {};
   var dataToBeFiltered = [];
 
-  function filterData(callback, filterValue) {
+  function filterData(callback, filterValue, type) {
     var filteredData = dataToBeFiltered;
     if (filterValue !== dependencies.data.FILTER_ANY_VALUE) {
       filteredData = dataToBeFiltered.filter(function (it) {
-        return callback(it, filterValue);
+        return callback(it, filterValue, type);
       });
     }
     dataToBeFiltered = filteredData;
-  }
-
-  function checkIt(condition, it) {
-    if (condition) {
-      return it;
-    }
-    return null;
   }
 
   function checkPrice(it, filterValue) {
     var lowerLimit = dependencies.data.PriceLimit[filterValue.toUpperCase()].FROM;
     var upperLimit = dependencies.data.PriceLimit[filterValue.toUpperCase()].TO;
     var condition = ((it.offer.price >= lowerLimit) && (it.offer.price <= upperLimit));
-    return checkIt(condition, it);
+    return condition ? it : null;
   }
 
-  function checkType(it, filterValue) {
-    var condition = (it.offer.type === filterValue);
-    return checkIt(condition, it);
-  }
-
-  function checkRooms(it, filterValue) {
-    var condition = (it.offer.rooms === +filterValue);
-    return checkIt(condition, it);
-  }
-
-  function checkGuests(it, filterValue) {
-    var condition = (it.offer.guests === +filterValue);
-    return checkIt(condition, it);
+  function checkByType(it, filterValue, type) {
+    var correctFilterValue = (typeof it.offer[type] === 'string') ? filterValue : +filterValue;
+    var condition = (it.offer[type] === correctFilterValue);
+    return condition ? it : null;
   }
 
   function checkFeature(it, filterValue) {
     var condition = it.offer.features.some(function (feature) {
       return feature === filterValue;
     });
-    return checkIt(condition, it);
+    return condition ? it : null;
   }
 
   function renderFilteredOffers() {
@@ -90,7 +74,7 @@
       if (filterState.hasOwnProperty(filterKey)) {
         var callback = FilterFunction[filterKey];
         var filterValue = filterState[filterKey];
-        filterData(callback, filterValue);
+        filterData(callback, filterValue, filterKey.toLowerCase());
       }
     }
     dependencies.utils.debounce(renderFilteredOffers)();
