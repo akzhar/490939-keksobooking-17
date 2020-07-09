@@ -7,8 +7,8 @@
   var TIME_UNIT = ' c';
   var OK_STATUS = 200;
   var Url = {
-    GET: 'https://js.dump.academy/keksobooking/data',
-    POST: 'https://js.dump.academy/keksobooking'
+    GET: 'https://javascript.pages.academy/keksobooking/data',
+    POST: 'https://javascript.pages.academy/keksobooking'
   };
 
   function load(onLoad, onError, method, data) {
